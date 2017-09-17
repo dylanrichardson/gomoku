@@ -4,12 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 class Game {
-    private final GameCommunication gameCommunication;
-    private Board board;
-    private List<Move> moves;
-    private Player player;
 
-    Game(GameCommunication gameCommunication, Board board, Player player) {
+    private static final Integer WIN_LENGTH = 5;
+    private static final Integer BOARD_SIDE = 5;
+
+    private final GameCommunication gameCommunication;
+    private final List<Move> moves;
+    private final Player player;
+
+    // mutable
+    private Board board;
+
+    private Game(GameCommunication gameCommunication, Board board, Player player) {
         this.gameCommunication = gameCommunication;
         this.board = board;
         this.player = player;
@@ -17,10 +23,11 @@ class Game {
     }
 
     Game(String playerName) {
-        this(new GameCommunication(playerName), new Board(), new Player(playerName));
+        this(new GameCommunication(playerName), new Board(BOARD_SIDE, BOARD_SIDE), new Player(playerName, WIN_LENGTH));
     }
 
     Result play() {
+        // TODO handle special 2nd move of game
         while (true) {
             gameCommunication.waitForOpponentMove();
             if (gameCommunication.isOver()) {
@@ -33,7 +40,7 @@ class Game {
     private void makeMove() {
         Move move = player.getNextMoveOn(board);
         moves.add(move);
-        board.makeMove(move);
+        board = board.withMove(move);
         gameCommunication.makeMove(move);
     }
 

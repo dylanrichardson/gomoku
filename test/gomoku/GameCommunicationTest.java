@@ -37,10 +37,9 @@ public class GameCommunicationTest {
     @Test
     public void makeMove() throws InterruptedException, IOException {
         String playerName = "test";
-        Move move = new Move(playerName, "col", "row");
+        Move move = new Move(playerName, 0, 0);
         GameCommunication gameCommunication = new GameCommunication(playerName);
         gameCommunication.makeMove(move);
-        Thread.sleep(100);
         List<String> move_file = Files.readAllLines(Paths.get(MOVE_FILE));
         tryDelete(Paths.get(MOVE_FILE));
 
@@ -49,12 +48,12 @@ public class GameCommunicationTest {
 
     @Test
     public void getEndReason() {
-
+        // TODO
     }
 
     @Test
     public void getOutcome() {
-
+        // TODO
     }
 
     @Test

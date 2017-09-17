@@ -1,23 +1,20 @@
 package gomoku;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
-
 class Player {
 
     private final String name;
+    private final Algorithm algorithm;
 
-    Player(String name) {
+    private Player(String name, Algorithm algorithm) {
         this.name = name;
+        this.algorithm = algorithm;
+    }
+
+    Player(String name, Integer winLength) {
+        this(name, new MiniMax(winLength));
     }
 
     Move getNextMoveOn(Board board) {
-        Collection<Move> possibleMoves = board
-                .getOpenCells()
-                .stream()
-                .map((cell) -> new Move(name, cell.fst, cell.snd))
-                .collect(Collectors.toList());
-        Algorithm algorithm = new MiniMax();
-        return algorithm.chooseMove(possibleMoves, board);
+        return algorithm.chooseMove(name, board);
     }
 }

@@ -1,24 +1,38 @@
 package gomoku;
 
+import static java.lang.Character.toLowerCase;
+
 class Move {
 
-    private final String playerName;
-    private final String column;
-    private final String row;
+    private static final Character INDEX = 'a';
 
-    Move(String playerName, String column, String row) {
+    private final String playerName;
+    private final Integer column;
+    private final Integer row;
+
+    Move(String playerName, Character column, Integer row) {
+        this(playerName, toLowerCase(column) - INDEX, row);
+    }
+
+    Move(String playerName, Integer column, Integer row) {
         this.playerName = playerName;
         this.column = column;
         this.row = row;
     }
 
-    Move(String playerName, Integer column, Integer row) {
-        this.playerName = playerName;
-        this.column = column.toString();
-        this.row = row.toString();
+    public String toString() {
+        return playerName + " " + (char) (column + INDEX) + " " + row;
     }
 
-    public String toString() {
-        return playerName + " " + column + " " + row;
+    Integer getColumn() {
+        return column;
+    }
+
+    String getPlayerName() {
+        return playerName;
+    }
+
+    Integer getRow() {
+        return row;
     }
 }
