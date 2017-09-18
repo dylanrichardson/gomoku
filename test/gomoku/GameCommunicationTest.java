@@ -12,6 +12,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static gomoku.GameCommunication.*;
+import static gomoku.Stone.FRIENDLY;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.*;
 
@@ -37,13 +38,13 @@ public class GameCommunicationTest {
     @Test
     public void makeMove() throws InterruptedException, IOException {
         String playerName = "test";
-        Move move = new Move(playerName, 0, 0);
+        Move move = new Move(FRIENDLY, 0, 0);
         GameCommunication gameCommunication = new GameCommunication(playerName);
-        gameCommunication.makeMove(move);
+        gameCommunication.writeMove(move);
         List<String> move_file = Files.readAllLines(Paths.get(MOVE_FILE));
         tryDelete(Paths.get(MOVE_FILE));
 
-        assertEquals(singletonList(move.toString()), move_file);
+        assertEquals(singletonList(playerName + " " + move.toString()), move_file);
     }
 
     @Test

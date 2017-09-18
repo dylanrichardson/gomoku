@@ -1,10 +1,13 @@
 package gomoku;
 
-
-import java.util.OptionalInt;
+import java.util.OptionalDouble;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.stream.IntStream;
+import java.util.stream.DoubleStream;
+
+import static gomoku.Stone.FRIENDLY;
+import static gomoku.Stone.OPPONENT;
+
 
 class MiniMax implements Algorithm {
 
@@ -15,36 +18,51 @@ class MiniMax implements Algorithm {
     }
 
     @Override
-    public Integer evaluate(String playerName, Move move, Board board) {
-        return getMinValue(playerName, board.withMove(move));
+    public Double evaluateMove(Move move, Board board) {
+        Board newBoard = board.withMove(move);
+        if (move.getStone() == FRIENDLY) {
+            return getMaxValue(newBoard, "");
+        } else {
+            return getMinValue(newBoard, "");
+        }
     }
 
-    private Integer getMinValue(String playerName, Board board) {
-        return getExtremeValue(playerName, board, IntStream::min, this::getMaxValue);
+    private Double getMinValue(Board board, String tab) {
+        return getExtremeValue(OPPONENT, board, DoubleStream::min, this::getMaxValue, tab + "   ");
     }
 
-    private Integer getMaxValue(String playerName, Board board) {
-        return getExtremeValue(playerName, board, IntStream::max, this::getMinValue);
+    private Double getMaxValue(Board board, String tab) {
+        return getExtremeValue(FRIENDLY, board, DoubleStream::max, this::getMinValue, tab + "   ");
     }
 
-    private Integer getExtremeValue(
-            String playerName,
+    private Double getExtremeValue(
+            Stone stone,
             Board board,
-            Function<IntStream, OptionalInt> getValue,
-            BiFunction<String, Board, Integer> getNextExtremeValue) {
+            Function<DoubleStream, OptionalDouble> getValue,
+            BiFunction<Board, String, Double> getNextExtremeValue,
+            String tab) {
 
         if (board.isTerminal(winLength)) {
-            return evaluateBoard(board);
+            Stone winner = board.getWinner(winLength);
+            if (winner == FRIENDLY)
+                return WIN_VALUE;
+            if (winner == OPPONENT)
+                return LOSS_VALUE;
+            return DRAW_VALUE;
         }
 
-        IntStream moveValues = getPossibleMoves(playerName, board)
-                .mapToInt((move) -> getNextExtremeValue.apply(playerName, board.withMove(move)));
-        OptionalInt extremeValue = getValue.apply(moveValues);
+        // for debugging
+        System.out.println(tab + stone.toString());
+
+        DoubleStream moveValues = getPossibleMoves(stone.getOpponent(), board)
+                .mapToDouble((move) -> getNextExtremeValue.apply(board.withMove(move), tab));
+        OptionalDouble extremeValue = getValue.apply(moveValues);
 
         if (extremeValue.isPresent()) {
-            return extremeValue.getAsInt();
+            System.out.println(tab + " - " + extremeValue.getAsDouble());
+            return extremeValue.getAsDouble();
         } else {
-            throw new RuntimeException("No moves left to make");
+            throw NO_MOVES_LEFT;
         }
     }
 }

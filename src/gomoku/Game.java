@@ -23,17 +23,26 @@ class Game {
     }
 
     Game(String playerName) {
-        this(new GameCommunication(playerName), new Board(BOARD_SIDE, BOARD_SIDE), new Player(playerName, WIN_LENGTH));
+        this(new GameCommunication(playerName), new Board(BOARD_SIDE, BOARD_SIDE), new Player(WIN_LENGTH));
     }
 
     Result play() {
         // TODO handle special 2nd move of game
+        Long startTime = System.nanoTime();
         while (true) {
-            gameCommunication.waitForOpponentMove();
+            readMove();
             if (gameCommunication.isOver()) {
-                return getResult();
+                return getResult(System.nanoTime() - startTime);
             }
             makeMove();
+        }
+    }
+
+    private void readMove() {
+        Move move = gameCommunication.waitForOpponentMove();
+        if (move != null) {
+            moves.add(move);
+            board = board.withMove(move);
         }
     }
 
@@ -41,10 +50,10 @@ class Game {
         Move move = player.getNextMoveOn(board);
         moves.add(move);
         board = board.withMove(move);
-        gameCommunication.makeMove(move);
+        gameCommunication.writeMove(move);
     }
 
-    private Result getResult() {
-        return new Result(gameCommunication.getOutcome(), gameCommunication.getEndReason(), board, moves);
+    private Result getResult(Long duration) {
+        return new Result(gameCommunication.getOutcome(), gameCommunication.getEndReason(), board, moves, duration);
     }
 }

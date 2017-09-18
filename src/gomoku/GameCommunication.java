@@ -3,7 +3,9 @@ package gomoku;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
+import static gomoku.Stone.OPPONENT;
 import static java.util.Collections.singleton;
 
 class GameCommunication {
@@ -22,7 +24,7 @@ class GameCommunication {
         return Files.exists(Paths.get(END_GAME));
     }
 
-    void waitForOpponentMove() {
+    Move waitForOpponentMove() {
         Integer totalDuration = 0;
         Integer sleepDuration = 100;
         while (!Files.exists(Paths.get(playerFile(playerName)))) {
@@ -35,11 +37,26 @@ class GameCommunication {
             }
             totalDuration += sleepDuration;
         }
+        return readMove();
     }
 
-    void makeMove(Move move) {
+    private Move readMove() {
         try {
-            Files.write(Paths.get(MOVE_FILE), singleton(move.toString()));
+            List<String> lines = Files.readAllLines(Paths.get(MOVE_FILE));
+            return parseMove(lines.get(0));
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    private Move parseMove(String line) {
+        String[] tokens = line.split(" ");
+        return new Move(OPPONENT, tokens[1].charAt(0), Integer.parseInt(tokens[2]));
+    }
+
+    void writeMove(Move move) {
+        try {
+            Files.write(Paths.get(MOVE_FILE), singleton(playerName + " " + move.toString()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

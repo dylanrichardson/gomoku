@@ -4,23 +4,25 @@ import java.util.Comparator;
 import java.util.stream.Stream;
 
 interface Algorithm {
-    default Move chooseMove(String playerName, Board board) {
 
-        return getPossibleMoves(playerName, board)
-                .max(Comparator.comparingInt(move -> evaluate(playerName, move, board)))
-                .orElseThrow(() -> new RuntimeException("No moves left to make"));
+    Double WIN_VALUE = 1.0;
+    Double DRAW_VALUE = 0.0;
+    Double LOSS_VALUE = -1.0;
+
+    RuntimeException NO_MOVES_LEFT = new RuntimeException("No moves left to make");
+
+    default Move chooseMove(Stone stone, Board board) {
+        return getPossibleMoves(stone, board)
+                .max(Comparator.comparingDouble(move -> evaluateMove(move, board)))
+                .orElseThrow(() -> NO_MOVES_LEFT);
     }
 
-    default Stream<Move> getPossibleMoves(String playerName, Board board) {
+    default Stream<Move> getPossibleMoves(Stone stone, Board board) {
         return board
-                .getOpenCells().stream()
-                .map((cell) -> new Move(playerName, cell.fst, cell.snd));
+                .getOpenCells()
+                .stream()
+                .map(cell -> new Move(stone, cell.fst, cell.snd));
     }
 
-    default Integer evaluateBoard(Board board) {
-        // TODO
-        return 0;
-    }
-
-    Integer evaluate(String playerName, Move move, Board board);
+    Double evaluateMove(Move move, Board board);
 }
