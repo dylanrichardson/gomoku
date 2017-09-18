@@ -7,9 +7,9 @@ class Main {
 
     public static void main(String[] args) {
         String playerName = parseArgs(args);
-        Game game = new Game(playerName);
+        Player player = new Player(playerName);
         try {
-            Result result = game.play();
+            Result result = player.play();
             System.out.println(result);
         } catch (RuntimeException e) {
             System.err.println(e.getMessage());
