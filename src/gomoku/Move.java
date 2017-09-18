@@ -32,9 +32,9 @@ class Move {
 
         Move move = (Move) o;
 
-        if (stone != move.stone) return false;
-        if (column != null ? !column.equals(move.column) : move.column != null) return false;
-        return row != null ? row.equals(move.row) : move.row == null;
+        return stone == move.stone
+                && (column != null ? column.equals(move.column) : move.column == null)
+                && (row != null ? row.equals(move.row) : move.row == null);
     }
 
     @Override

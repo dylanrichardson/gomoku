@@ -3,6 +3,8 @@ package gomoku;
 import java.util.Comparator;
 import java.util.stream.Stream;
 
+import static gomoku.Stone.FRIENDLY;
+
 interface Algorithm {
 
     Double WIN_VALUE = 1.0;
@@ -12,8 +14,9 @@ interface Algorithm {
     RuntimeException NO_MOVES_LEFT = new RuntimeException("No moves left to make");
 
     default Move chooseMove(Stone stone, Board board) {
+        Integer MOD = (stone == FRIENDLY) ? 1 : -1;
         return getPossibleMoves(stone, board)
-                .max(Comparator.comparingDouble(move -> evaluateMove(move, board)))
+                .max(Comparator.comparingDouble(move -> evaluateMove(move, board) * MOD))
                 .orElseThrow(() -> NO_MOVES_LEFT);
     }
 

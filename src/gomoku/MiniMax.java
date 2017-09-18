@@ -19,20 +19,21 @@ class MiniMax implements Algorithm {
 
     @Override
     public Double evaluateMove(Move move, Board board) {
+        System.out.println(move);
         Board newBoard = board.withMove(move);
         if (move.getStone() == FRIENDLY) {
-            return getMaxValue(newBoard, "");
-        } else {
             return getMinValue(newBoard, "");
+        } else {
+            return getMaxValue(newBoard, "");
         }
     }
 
     private Double getMinValue(Board board, String tab) {
-        return getExtremeValue(OPPONENT, board, DoubleStream::min, this::getMaxValue, tab + "   ");
+        return getExtremeValue(FRIENDLY, board, DoubleStream::min, this::getMaxValue, tab + "   ");
     }
 
     private Double getMaxValue(Board board, String tab) {
-        return getExtremeValue(FRIENDLY, board, DoubleStream::max, this::getMinValue, tab + "   ");
+        return getExtremeValue(OPPONENT, board, DoubleStream::max, this::getMinValue, tab + "   ");
     }
 
     private Double getExtremeValue(
@@ -55,7 +56,7 @@ class MiniMax implements Algorithm {
         System.out.println(tab + stone.toString());
 
         DoubleStream moveValues = getPossibleMoves(stone.getOpponent(), board)
-                .mapToDouble((move) -> getNextExtremeValue.apply(board.withMove(move), tab));
+                .mapToDouble((move) -> {System.out.println(tab + move);return getNextExtremeValue.apply(board.withMove(move), tab);});
         OptionalDouble extremeValue = getValue.apply(moveValues);
 
         if (extremeValue.isPresent()) {

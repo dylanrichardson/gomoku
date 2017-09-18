@@ -12,7 +12,7 @@ class Board {
     private final Stone[][] cells;
     private final Integer width;
     private final Integer height;
-    private Map<Integer, Stone> winners = new HashMap<>();
+    private final Map<Integer, Stone> winners = new HashMap<>();
 
     Board() {
         this(15, 15);

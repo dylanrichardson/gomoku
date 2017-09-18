@@ -1,7 +1,7 @@
 package gomoku;
 
 
-public class Main {
+class Main {
 
     private static final String PLAYER_NAME = "bid";
 

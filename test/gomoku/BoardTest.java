@@ -21,8 +21,7 @@ public class BoardTest {
     public void withMoveNoMutation() {
         Board board1 = new Board(3, 3)
                 .withMove(new Move(FRIENDLY, 0, 0));
-        Board board2 = board1
-                .withMove(new Move(OPPONENT, 0, 0));
+        board1.withMove(new Move(OPPONENT, 0, 0));
         assertEquals(FRIENDLY, board1.getStoneInCell(0, 0));
     }
 
