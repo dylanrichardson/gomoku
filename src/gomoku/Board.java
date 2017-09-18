@@ -126,4 +126,8 @@ class Board {
                 .mapToObj(getStone::apply)
                 .collect(Collectors.toList());
     }
+
+    Boolean isValidMove(Move move) {
+        return move != null && move.getColumn() < width && move.getRow() < height;
+    }
 }

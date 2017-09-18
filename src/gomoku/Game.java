@@ -40,7 +40,7 @@ class Game {
 
     private void readMove() {
         Move move = gameCommunication.waitForOpponentMove();
-        if (move != null) {
+        if (board.isValidMove(move)) {
             moves.add(move);
             board = board.withMove(move);
         }

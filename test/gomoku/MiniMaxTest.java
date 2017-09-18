@@ -10,6 +10,8 @@ import static org.junit.Assert.assertEquals;
 
 public class MiniMaxTest {
 
+    // 3 x 3
+
     @Test
     public void chooseMoveFriendly() {
         // O |   |
@@ -123,6 +125,38 @@ public class MiniMaxTest {
         Move move = new Move(FRIENDLY, 0, 2);
 
         assertEquals(LOSS_VALUE, new MiniMax(3).evaluateMove(move, board), 0.0);
+    }
+
+    // 4 x 4
+
+    @Test
+    public void evaluateMoveWin4x4() {
+        //  F | F | F |(F)
+        //    |   |   |
+        //    |   |   |
+        //    |   |   |
+        Board board = new Board(4, 4)
+                .withMove(new Move(FRIENDLY, 0, 0))
+                .withMove(new Move(FRIENDLY, 1, 0))
+                .withMove(new Move(FRIENDLY, 2, 0));
+        Move move = new Move(FRIENDLY, 3, 0);
+
+        assertEquals(WIN_VALUE, new MiniMax(3).evaluateMove(move, board), 0.0);
+    }
+
+    @Test
+    public void evaluateMoveLoss4x4() {
+        //  F | F | F |
+        //    |   |   |(O)
+        //    |   |   |
+        //    |   |   |
+        Board board = new Board(4, 4)
+                .withMove(new Move(FRIENDLY, 0, 0))
+                .withMove(new Move(FRIENDLY, 1, 0))
+                .withMove(new Move(FRIENDLY, 2, 0));
+        Move move = new Move(OPPONENT, 3, 0);
+
+        assertEquals(WIN_VALUE, new MiniMax(3).evaluateMove(move, board), 0.0);
     }
 
 }

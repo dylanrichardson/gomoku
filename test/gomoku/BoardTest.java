@@ -130,4 +130,18 @@ public class BoardTest {
         assertEquals(null, board.getWinner(3));
     }
 
+    @Test
+    public void isValidMoveTrue() {
+        Board board = new Board(3, 3);
+        Move move = new Move(FRIENDLY, 0, 0);
+        assertTrue(board.isValidMove(move));
+    }
+
+    @Test
+    public void isValidMoveFalse() {
+        Board board = new Board(3, 3);
+        Move move = new Move(FRIENDLY, 3, 3);
+        assertFalse(board.isValidMove(move));
+    }
+
 }
