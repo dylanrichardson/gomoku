@@ -13,10 +13,10 @@ interface Algorithm {
 
     RuntimeException NO_MOVES_LEFT = new RuntimeException("No moves left to make");
 
-    default Move chooseMove(Stone stone, Board board) {
+    default Move chooseMove(Stone stone, Board board, Integer winLength) {
         Integer MOD = (stone == FRIENDLY) ? 1 : -1;
         return getPossibleMoves(stone, board)
-                .max(Comparator.comparingDouble(move -> evaluateMove(move, board) * MOD))
+                .max(Comparator.comparingDouble(move -> evaluateMove(move, board, winLength) * MOD))
                 .orElseThrow(() -> NO_MOVES_LEFT);
     }
 
@@ -27,5 +27,5 @@ interface Algorithm {
                 .map(cell -> new Move(stone, cell.fst, cell.snd));
     }
 
-    Double evaluateMove(Move move, Board board);
+    Double evaluateMove(Move move, Board board, Integer winLength);
 }

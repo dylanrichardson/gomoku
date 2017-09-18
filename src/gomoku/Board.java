@@ -7,6 +7,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static gomoku.Stone.FRIENDLY;
+import static gomoku.Stone.OPPONENT;
+
 class Board {
 
     private final Stone[][] cells;
@@ -128,6 +131,34 @@ class Board {
     }
 
     Boolean isValidMove(Move move) {
-        return move != null && move.getColumn() < width && move.getRow() < height;
+        return move != null
+                && move.getColumn() < width
+                && move.getColumn() >= 0
+                && move.getRow() < height
+                && move.getRow() >= 0;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int row = 0; row < height; row++) {
+            for (int col = 0; col < width - 1; col++) {
+                stringBuilder.append(" ");
+                stringBuilder.append(printCell(cells[col][row]));
+                stringBuilder.append(" |");
+            }
+            stringBuilder.append(" ");
+            stringBuilder.append(printCell(cells[width - 1][row]));
+            stringBuilder.append(" \n");
+        }
+        return stringBuilder.toString();
+    }
+
+    private String printCell(Stone stone) {
+        if (stone == FRIENDLY)
+            return "F";
+        if (stone == OPPONENT)
+            return "O";
+        return " ";
     }
 }

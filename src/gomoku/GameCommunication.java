@@ -12,7 +12,7 @@ class GameCommunication {
 
     static final String MOVE_FILE = "move_file";
     static final String END_GAME = "end_game";
-    private static final Integer TIME_LIMIT = 10000;
+    private static final Integer TIME_LIMIT = 20000;//10000
 
     private final String playerName;
 
@@ -44,7 +44,7 @@ class GameCommunication {
         try {
             List<String> lines = Files.readAllLines(Paths.get(MOVE_FILE));
             return parseMove(lines.get(0));
-        } catch (IOException e) {
+        } catch (IOException | IndexOutOfBoundsException e) {
             return null;
         }
     }
@@ -56,7 +56,8 @@ class GameCommunication {
 
     void writeMove(Move move) {
         try {
-            Files.write(Paths.get(MOVE_FILE), singleton(playerName + " " + move.toString()));
+            System.out.println("\n\n" + playerName + " made move " + move + "\n\n");
+            Files.write(Paths.get(MOVE_FILE), singleton(playerName + " " + move.getCell()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

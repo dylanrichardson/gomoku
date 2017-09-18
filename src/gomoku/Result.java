@@ -35,4 +35,15 @@ class Result {
     Long getDuration() {
         return duration;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Outcome: " + outcome + "\n");
+        stringBuilder.append("End reason: " + endReason + "\n");
+        stringBuilder.append("Duration: " + duration + "\n");
+        stringBuilder.append("Board: " + board + "\n");
+        stringBuilder.append("Moves: " + moves + "\n");
+        return stringBuilder.toString();
+    }
 }

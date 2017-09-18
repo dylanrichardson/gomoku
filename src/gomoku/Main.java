@@ -8,7 +8,12 @@ class Main {
     public static void main(String[] args) {
         String playerName = parseArgs(args);
         Game game = new Game(playerName);
-        Result result = game.play();
+        try {
+            Result result = game.play();
+            System.out.println(result);
+        } catch (RuntimeException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     private static String parseArgs(String[] args) {

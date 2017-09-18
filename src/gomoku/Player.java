@@ -6,15 +6,15 @@ class Player {
 
     private final Algorithm algorithm;
 
-    private Player(Algorithm algorithm) {
+    Player(Algorithm algorithm) {
         this.algorithm = algorithm;
     }
 
-    Player(Integer winLength) {
-        this(new MiniMax(winLength));
+    Player() {
+        this(new MiniMax());
     }
 
-    Move getNextMoveOn(Board board) {
-        return algorithm.chooseMove(FRIENDLY, board);
+    Move getNextMoveOn(Board board, Integer winLength) {
+        return algorithm.chooseMove(FRIENDLY, board, winLength);
     }
 }

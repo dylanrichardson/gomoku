@@ -144,4 +144,24 @@ public class BoardTest {
         assertFalse(board.isValidMove(move));
     }
 
+    @Test
+    public void isValidMoveFalseNeg() {
+        Board board = new Board(3, 3);
+        Move move = new Move(FRIENDLY, -1, -1);
+        assertFalse(board.isValidMove(move));
+    }
+
+    @Test
+    public void print() {
+        String boardString = " F | F | O \n"
+                           + " O |   |   \n"
+                           + "   |   |   \n";
+        Board board = new Board(3, 3)
+                .withMove(new Move(FRIENDLY, 0, 0))
+                .withMove(new Move(OPPONENT, 2, 0))
+                .withMove(new Move(FRIENDLY, 1, 0))
+                .withMove(new Move(OPPONENT, 0, 1));
+        assertEquals(boardString, board.toString());
+    }
+
 }

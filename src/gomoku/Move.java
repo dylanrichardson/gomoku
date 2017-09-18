@@ -1,5 +1,6 @@
 package gomoku;
 
+import static gomoku.Stone.FRIENDLY;
 import static java.lang.Character.toLowerCase;
 
 class Move {
@@ -22,7 +23,7 @@ class Move {
 
     @Override
     public String toString() {
-        return (char) (column + INDEX) + " " + row;
+        return ((stone == FRIENDLY) ? "F" : "O") + " " + getCell();
     }
 
     @Override
@@ -55,5 +56,9 @@ class Move {
 
     Integer getRow() {
         return row;
+    }
+
+    String getCell() {
+        return (char) (column + INDEX) + " " + row;
     }
 }

@@ -41,10 +41,11 @@ public class GameCommunicationTest {
         Move move = new Move(FRIENDLY, 0, 0);
         GameCommunication gameCommunication = new GameCommunication(playerName);
         gameCommunication.writeMove(move);
-        List<String> move_file = Files.readAllLines(Paths.get(MOVE_FILE));
+
+        List<String> moveFile = Files.readAllLines(Paths.get(MOVE_FILE));
         tryDelete(Paths.get(MOVE_FILE));
 
-        assertEquals(singletonList(playerName + " " + move.toString()), move_file);
+        assertEquals(singletonList("test a 0"), moveFile);
     }
 
     @Test

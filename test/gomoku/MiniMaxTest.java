@@ -25,8 +25,8 @@ public class MiniMaxTest {
         Move move = new Move(FRIENDLY, 0, 2);
 
 
-        assertEquals(LOSS_VALUE, new MiniMax(3).evaluateMove(new Move(FRIENDLY, 1, 2), board), 0.0);
-        assertEquals(move, new MiniMax(3).chooseMove(FRIENDLY, board));
+        assertEquals(LOSS_VALUE, new MiniMax().evaluateMove(new Move(FRIENDLY, 1, 2), board, 3), 0.0);
+        assertEquals(move, new MiniMax().chooseMove(FRIENDLY, board, 3));
     }
 
     @Test
@@ -42,8 +42,8 @@ public class MiniMaxTest {
         Move move = new Move(OPPONENT, 0, 2);
 
 
-        assertEquals(LOSS_VALUE, new MiniMax(3).evaluateMove(new Move(OPPONENT, 0, 2), board), 0.0);
-        assertEquals(move, new MiniMax(3).chooseMove(OPPONENT, board));
+        assertEquals(LOSS_VALUE, new MiniMax().evaluateMove(new Move(OPPONENT, 0, 2), board, 3), 0.0);
+        assertEquals(move, new MiniMax().chooseMove(OPPONENT, board, 3));
     }
 
     @Test
@@ -56,7 +56,7 @@ public class MiniMaxTest {
                 .withMove(new Move(FRIENDLY, 0, 1));
         Move move = new Move(FRIENDLY, 2, 0);
 
-        assertEquals(WIN_VALUE, new MiniMax(3).evaluateMove(move, board), 0.0);
+        assertEquals(WIN_VALUE, new MiniMax().evaluateMove(move, board, 3), 0.0);
     }
 
     @Test
@@ -69,7 +69,7 @@ public class MiniMaxTest {
                 .withMove(new Move(OPPONENT, 1, 0));
         Move move = new Move(FRIENDLY, 2, 1);
 
-        assertEquals(LOSS_VALUE, new MiniMax(3).evaluateMove(move, board), 0.0);
+        assertEquals(LOSS_VALUE, new MiniMax().evaluateMove(move, board, 3), 0.0);
     }
 
     @Test
@@ -88,7 +88,7 @@ public class MiniMaxTest {
         Move move = new Move(FRIENDLY, 0, 2);
 
 
-        assertEquals(LOSS_VALUE, new MiniMax(3).evaluateMove(move, board), 0.0);
+        assertEquals(LOSS_VALUE, new MiniMax().evaluateMove(move, board, 3), 0.0);
     }
 
     @Test
@@ -107,7 +107,7 @@ public class MiniMaxTest {
         Move move = new Move(OPPONENT, 0, 2);
 
 
-        assertEquals(WIN_VALUE, new MiniMax(3).evaluateMove(move, board), 0.0);
+        assertEquals(WIN_VALUE, new MiniMax().evaluateMove(move, board, 3), 0.0);
     }
 
     @Test
@@ -124,7 +124,7 @@ public class MiniMaxTest {
                 .withMove(new Move(OPPONENT, 1, 0));
         Move move = new Move(FRIENDLY, 0, 2);
 
-        assertEquals(LOSS_VALUE, new MiniMax(3).evaluateMove(move, board), 0.0);
+        assertEquals(LOSS_VALUE, new MiniMax().evaluateMove(move, board, 3), 0.0);
     }
 
     // 4 x 4
@@ -141,7 +141,7 @@ public class MiniMaxTest {
                 .withMove(new Move(FRIENDLY, 2, 0));
         Move move = new Move(FRIENDLY, 3, 0);
 
-        assertEquals(WIN_VALUE, new MiniMax(3).evaluateMove(move, board), 0.0);
+        assertEquals(WIN_VALUE, new MiniMax().evaluateMove(move, board, 3), 0.0);
     }
 
     @Test
@@ -156,7 +156,7 @@ public class MiniMaxTest {
                 .withMove(new Move(FRIENDLY, 2, 0));
         Move move = new Move(OPPONENT, 3, 0);
 
-        assertEquals(WIN_VALUE, new MiniMax(3).evaluateMove(move, board), 0.0);
+        assertEquals(WIN_VALUE, new MiniMax().evaluateMove(move, board, 3), 0.0);
     }
 
 }
