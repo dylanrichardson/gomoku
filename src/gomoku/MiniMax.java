@@ -12,7 +12,7 @@ class MiniMax implements Algorithm {
 
     @Override
     public Double evaluateMove(Move move, Board board, Integer winLength) {
-        Debug.print(move);
+//        Debug.print(move);
         Board newBoard = board.withMove(move);
         if (move.getStone() == FRIENDLY) {
             return getMinValue(newBoard, "", winLength);
@@ -46,16 +46,16 @@ class MiniMax implements Algorithm {
             return DRAW_VALUE;
         }
 
-        Debug.print(tab + stone.toString());
+//        Debug.print(tab + stone.toString());
 
         DoubleStream moveValues = getPossibleMoves(stone.getOpponent(), board).mapToDouble((move) -> {
-            Debug.print(tab + move);
+//            Debug.print(tab + move);
             return getNextExtremeValue.apply(board.withMove(move), tab, winLength);
         });
         OptionalDouble extremeValue = getValue.apply(moveValues);
 
         if (extremeValue.isPresent()) {
-            Debug.print(tab + " - " + extremeValue.getAsDouble());
+//            Debug.print(tab + " - " + extremeValue.getAsDouble());
             return extremeValue.getAsDouble();
         } else {
             throw NO_MOVES_LEFT;

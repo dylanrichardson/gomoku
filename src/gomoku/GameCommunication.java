@@ -18,7 +18,7 @@ class GameCommunication {
 
     static final String MOVE_FILE = "move_file";
     static final String END_GAME = "end_game";
-    private static final Integer TIME_LIMIT = 20000;//10000
+    private static final Integer TIME_LIMIT = 10000;
 
     private final String playerName;
 
@@ -30,7 +30,7 @@ class GameCommunication {
         return Files.exists(Paths.get(END_GAME));
     }
 
-    void waitForOpponentMove() {
+    void waitForTurn() {
         Integer totalDuration = 0;
         Integer sleepDuration = 100;
         while (!Files.exists(Paths.get(playerFile(playerName)))) {
@@ -61,9 +61,11 @@ class GameCommunication {
 
     void writeMove(Move move) {
         try {
+            Thread.sleep(1000); // TODO remove this line
             Debug.print("\n\n" + playerName + " made move " + move + "\n\n");
             Files.write(Paths.get(MOVE_FILE), singleton(playerName + " " + move.getCell()));
-        } catch (IOException e) {
+            Files.delete(Paths.get(playerFile(playerName)));
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -102,7 +104,7 @@ class GameCommunication {
     }
 
     private Outcome parseOutcome(String line) {
-        if (line.equals("END: Match TIED. Board full!"))
+        if (line.equals("END: TIE! board full!"))
             return DRAW;
         if (line.split(" ")[1].equals(playerName))
             return WIN;
@@ -111,5 +113,9 @@ class GameCommunication {
 
     static String playerFile(String playerName) {
         return playerName + ".go";
+    }
+
+    String getPlayerName() {
+        return playerName;
     }
 }

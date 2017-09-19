@@ -34,6 +34,8 @@ public class PlayerTest {
         assertNull(exception);
         assertEquals(DRAW, resultA.getOutcome());
         assertEquals(DRAW, resultB.getOutcome());
+        assertEquals(9, resultA.getMoves().size());
+        assertEquals(9, resultB.getMoves().size());
     }
 
     private void refGame(String playerA, Thread threadA, String playerB, Thread threadB) {
@@ -54,6 +56,7 @@ public class PlayerTest {
     private Thread startPlayer(String playerName, Algorithm algorithm) {
         Thread thread = new Thread(() -> {
             Result result = new Player(playerName, 3, 3, 3, algorithm).play();
+            Debug.print(result);
             if (playerName.equals(playerA))
                 resultA = result;
             else

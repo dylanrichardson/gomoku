@@ -254,6 +254,7 @@ def getTeamFileName(team_name):
 
 def writeTeamGoFile(team_name):
     team_go_file = getTeamFileName(team_name)
+    # time.sleep(0.7) # <------------------------------------------    NEW
     with open(team_go_file, 'w') as team_fid:
         team_fid.write("go!\n")
         team_fid.flush()
@@ -262,14 +263,15 @@ def writeTeamGoFile(team_name):
 
 def removeTeamGoFile(team_name):
     team_go_file = getTeamFileName(team_name)
-    os.remove(team_go_file)
+    if os.path.isfile(team_go_file):
+        os.remove(team_go_file)
 
 
 def waitForPlay(prev_mod_info, move_file_name="move_file"):
 
     played_in_time = True
     timeout = time.time() + turn_length_in_seconds
-    while( os.stat(move_file_name).st_mtime == prev_mod_info):
+    while os.stat(move_file_name).st_mtime == prev_mod_info:
         if time.time() >= timeout:
             played_in_time = False
             break
@@ -352,13 +354,13 @@ def play_gomoku(team1, team2):
 
         move_file_mod_info = writeMoveFile(move, move_msg, move_file_name)
 
-        pass
+
         #playing_game = False
         logging.info("")
     writeEndFile(move_msg)
     for team in teams:
         writeTeamGoFile(team)
-    pass
+
 
 
 

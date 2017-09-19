@@ -9,8 +9,10 @@ class Result {
     private final Board board;
     private final List<Move> moves;
     private final Long duration;
+    private final String playerName;
 
-    Result(Outcome outcome, EndReason endReason, Board board, List<Move> moves, Long duration) {
+    Result(String playerName, Outcome outcome, EndReason endReason, Board board, List<Move> moves, Long duration) {
+        this.playerName = playerName;
         this.outcome = outcome;
         this.endReason = endReason;
         this.board = board;
@@ -38,10 +40,11 @@ class Result {
 
     @Override
     public String toString() {
-        return  "Outcome: " + outcome + "\n" +
+        return  "Player: " + playerName + "\n" +
+                "Outcome: " + outcome + "\n" +
                 "End reason: " + endReason + "\n" +
                 "Duration: " + duration + "\n" +
-                "Board: " + board + "\n" +
+                "Board: \n" + board + "\n" +
                 "Moves: " + moves + "\n";
     }
 }

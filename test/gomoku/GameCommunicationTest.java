@@ -121,7 +121,7 @@ public class GameCommunicationTest {
                 }
             }
         }, delay);
-        new GameCommunication(playerName).waitForOpponentMove();
+        new GameCommunication(playerName).waitForTurn();
         long endTime = System.nanoTime();
         tryDelete(path);
 
