@@ -366,16 +366,15 @@ def play_gomoku(team1, team2):
 
 
 if __name__ == "__main__":
-    # global board_width, board_height, length_to_win
-    if len(sys.argv) == 3:
+    if len(sys.argv) >= 3:
         team1 = sys.argv[1]
         team2 = sys.argv[2]
-    elif len(sys.argv) == 6:
-        team1 = sys.argv[1]
-        team2 = sys.argv[2]
-        board_width = int(sys.argv[3])
-        board_height = int(sys.argv[4])
-        length_to_win = int(sys.argv[5])
+        if len(sys.argv) >= 6:
+            board_width = int(sys.argv[3])
+            board_height = int(sys.argv[4])
+            length_to_win = int(sys.argv[5])
+            if len(sys.argv) == 7:
+                turn_length_in_seconds = int(sys.argv[6])
     else:
         logging.error("Wrong number of arguments!  Call is %s [team1_name] [team2_name]")
         exit(8)

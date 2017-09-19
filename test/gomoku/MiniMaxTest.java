@@ -2,6 +2,7 @@ package gomoku;
 
 import org.junit.Test;
 
+import static gomoku.Algorithm.DRAW_VALUE;
 import static gomoku.Algorithm.LOSS_VALUE;
 import static gomoku.Algorithm.WIN_VALUE;
 import static gomoku.Stone.FRIENDLY;
@@ -53,7 +54,7 @@ public class MiniMaxTest {
         //    |   |
         Board board = new Board(3, 3)
                 .withMove(new Move(FRIENDLY, 0, 0))
-                .withMove(new Move(FRIENDLY, 0, 1));
+                .withMove(new Move(FRIENDLY, 1, 0));
         Move move = new Move(FRIENDLY, 2, 0);
 
         assertEquals(WIN_VALUE, new MiniMax().evaluateMove(move, board, 3), 0.0);
@@ -174,7 +175,7 @@ public class MiniMaxTest {
                 .withMove(new Move(FRIENDLY, 2, 0));
         Move move = new Move(FRIENDLY, 3, 0);
 
-        assertEquals(WIN_VALUE, new MiniMax().evaluateMove(move, board, 3), 0.0);
+        assertEquals(WIN_VALUE, new MiniMax().evaluateMove(move, board, 4), 0.0);
     }
 
     @Test
@@ -189,7 +190,19 @@ public class MiniMaxTest {
                 .withMove(new Move(FRIENDLY, 2, 0));
         Move move = new Move(OPPONENT, 3, 0);
 
-        assertEquals(WIN_VALUE, new MiniMax().evaluateMove(move, board, 3), 0.0);
+        assertEquals(WIN_VALUE, new MiniMax().evaluateMove(move, board, 4), 0.0);
+    }
+
+    @Test
+    public void evaluateMoveDraw4x4() {
+        // (F)|   |   |
+        //    |   |   |
+        //    |   |   |
+        //    |   |   |
+        Board board = new Board(4, 4);
+        Move move = new Move(FRIENDLY, 0, 0);
+
+        assertEquals(DRAW_VALUE, new MiniMax().evaluateMove(move, board, 4), 0.0);
     }
 
 }

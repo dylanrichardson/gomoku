@@ -14,7 +14,7 @@ class Main {
         Integer boardWidth = parseWidth(args);
         Integer boardHeight = parseHeight(args);
         Integer winLength = parseLength(args);
-        Debug.debug = parseDebug(args);
+        Debug.print = parseDebug(args);
 
         Player player = new Player(playerName, boardWidth, boardHeight, winLength);
         try {

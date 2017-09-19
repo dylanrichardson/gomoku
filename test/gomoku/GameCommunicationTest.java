@@ -40,8 +40,9 @@ public class GameCommunicationTest {
     }
 
     @Test
-    public void makeMove() throws InterruptedException, IOException {
+    public void makeMove() throws IOException {
         String playerName = "test";
+        Files.write(Paths.get(playerFile(playerName)), new ArrayList<>());
         Move move = new Move(FRIENDLY, 0, 0);
         GameCommunication gameCommunication = new GameCommunication(playerName);
         gameCommunication.writeMove(move);
@@ -96,7 +97,7 @@ public class GameCommunicationTest {
 
     @Test
     public void getOutcomeDraw() {
-        addEndGame("END: Match TIED. Board full!");
+        addEndGame("END: TIE! board full!");
         Outcome outcome = new GameCommunication("TEST").getOutcome();
         assertEquals(DRAW, outcome);
     }

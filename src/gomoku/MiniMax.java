@@ -1,7 +1,9 @@
 package gomoku;
 
+import java.util.List;
 import java.util.OptionalDouble;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
 import static gomoku.Stone.FRIENDLY;
@@ -12,7 +14,7 @@ class MiniMax implements Algorithm {
 
     @Override
     public Double evaluateMove(Move move, Board board, Integer winLength) {
-//        Debug.print(move);
+        Debug.debug(move);
         Board newBoard = board.withMove(move);
         if (move.getStone() == FRIENDLY) {
             return getMinValue(newBoard, "", winLength);
@@ -22,17 +24,17 @@ class MiniMax implements Algorithm {
     }
 
     private Double getMinValue(Board board, String tab, Integer winLength) {
-        return getExtremeValue(FRIENDLY, board, DoubleStream::min, this::getMaxValue, tab + "   ", winLength);
+        return getExtremeValue(FRIENDLY, board, false, this::getMaxValue, tab + "   ", winLength);
     }
 
     private Double getMaxValue(Board board, String tab, Integer winLength) {
-        return getExtremeValue(OPPONENT, board, DoubleStream::max, this::getMinValue, tab + "   ", winLength);
+        return getExtremeValue(OPPONENT, board, true, this::getMinValue, tab + "   ", winLength);
     }
 
     private Double getExtremeValue(
             Stone stone,
             Board board,
-            Function<DoubleStream, OptionalDouble> getValue,
+            Boolean positive,
             TriFunction<Board, String, Integer, Double> getNextExtremeValue,
             String tab,
             Integer winLength) {
@@ -46,20 +48,29 @@ class MiniMax implements Algorithm {
             return DRAW_VALUE;
         }
 
-//        Debug.print(tab + stone.toString());
+        Debug.debug(tab + stone.toString());
 
-        DoubleStream moveValues = getPossibleMoves(stone.getOpponent(), board).mapToDouble((move) -> {
-//            Debug.print(tab + move);
-            return getNextExtremeValue.apply(board.withMove(move), tab, winLength);
-        });
-        OptionalDouble extremeValue = getValue.apply(moveValues);
+        Integer mod = (positive) ? 1 : -1;
+        Double extremeScore = LOSS_VALUE * mod;
+        Move extremeMove = null;
+        List<Move> moves = getPossibleMoves(stone.getOpponent(), board).collect(Collectors.toList());
 
-        if (extremeValue.isPresent()) {
-//            Debug.print(tab + " - " + extremeValue.getAsDouble());
-            return extremeValue.getAsDouble();
-        } else {
-            throw NO_MOVES_LEFT;
+        for (Move move : moves) {
+            Debug.debug(tab + move);
+            Double score = mod * getNextExtremeValue.apply(board.withMove(move), tab, winLength);
+            if (score >= extremeScore * mod) {
+                extremeScore = score;
+                extremeMove = move;
+                if (score.equals(WIN_VALUE)) {
+                    break;
+                }
+            }
         }
+
+        if (extremeMove == null)
+            throw NO_MOVES_LEFT;
+        Debug.debug(tab + " score: " + extremeScore);
+        return extremeScore * mod;
     }
 
     @FunctionalInterface

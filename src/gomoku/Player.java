@@ -14,7 +14,7 @@ class Player {
     private Board board;
     private final Algorithm algorithm;
 
-    private Player(GameCommunication gameCommunication, Board board, Integer winLength, Algorithm algorithm) {
+    Player(GameCommunication gameCommunication, Board board, Integer winLength, Algorithm algorithm) {
         this.gameCommunication = gameCommunication;
         this.board = board;
         this.moves = new ArrayList<>();
@@ -26,7 +26,7 @@ class Player {
         this(playerName, width, height, winLength, new MiniMax());
     }
 
-    Player(String playerName, Integer width, Integer height, Integer winLength, Algorithm algorithm) {
+    private Player(String playerName, Integer width, Integer height, Integer winLength, Algorithm algorithm) {
         this(new GameCommunication(playerName), new Board(width, height), winLength, algorithm);
     }
 

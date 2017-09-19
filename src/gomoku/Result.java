@@ -43,7 +43,7 @@ class Result {
         return  "Player: " + playerName + "\n" +
                 "Outcome: " + outcome + "\n" +
                 "End reason: " + endReason + "\n" +
-                "Duration: " + duration + "\n" +
+                "Duration: " + duration + "s\n" +
                 "Board: \n" + board + "\n" +
                 "Moves: " + moves + "\n";
     }

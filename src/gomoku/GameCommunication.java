@@ -21,9 +21,15 @@ class GameCommunication {
     private static final Integer TIME_LIMIT = 10000;
 
     private final String playerName;
+    private final Integer timeLimit;
 
     GameCommunication(String playerName) {
+        this(playerName, TIME_LIMIT);
+    }
+
+    GameCommunication(String playerName, Integer timeLimit) {
         this.playerName = playerName;
+        this.timeLimit = timeLimit;
     }
 
     Boolean isOver() {
@@ -34,8 +40,8 @@ class GameCommunication {
         Integer totalDuration = 0;
         Integer sleepDuration = 100;
         while (!Files.exists(Paths.get(playerFile(playerName)))) {
-            if (totalDuration > TIME_LIMIT)
-                throw new RuntimeException("Player waited longer than " + TIME_LIMIT / 1000 + " seconds");
+            if (totalDuration > timeLimit)
+                throw new RuntimeException("Player waited longer than " + timeLimit / 1000 + " seconds");
             try {
                 Thread.sleep(sleepDuration);
             } catch (InterruptedException e) {
@@ -91,7 +97,7 @@ class GameCommunication {
             if (reason.get().equals("Invalid move!"))
                 return INVALID_MOVE;
         }
-        return null;
+        return FULL_BOARD;
     }
 
     Outcome getOutcome() {

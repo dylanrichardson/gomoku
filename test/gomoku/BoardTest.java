@@ -12,13 +12,13 @@ import static org.junit.Assert.*;
 
 public class BoardTest {
     @Test
-    public void withMove() {
+    public void withMove3x3() {
         Board board = new Board(3, 3)
                 .withMove(new Move(FRIENDLY, 0, 0));
         assertEquals(FRIENDLY, board.getStoneInCell(0, 0));
     }
     @Test
-    public void withMoveNoMutation() {
+    public void withMoveNoMutation3x3() {
         Board board1 = new Board(3, 3)
                 .withMove(new Move(FRIENDLY, 0, 0));
         board1.withMove(new Move(OPPONENT, 0, 0));
@@ -26,7 +26,7 @@ public class BoardTest {
     }
 
     @Test
-    public void withMoveOnMove() {
+    public void withMoveOnMove3x3() {
         Board board = new Board(3, 3)
                 .withMove(new Move(FRIENDLY, 0, 0))
                 .withMove(new Move(OPPONENT, 0, 0));
@@ -34,7 +34,7 @@ public class BoardTest {
     }
 
     @Test
-    public void getOpenCells() {
+    public void getOpenCells3x3() {
         Board board = new Board(3, 3)
                 .withMove(new Move(FRIENDLY, 0, 0));
         Collection<Pair<Integer, Integer>> openCells = Arrays.asList(
@@ -50,7 +50,7 @@ public class BoardTest {
     }
 
     @Test
-    public void isTerminalVerticalWin() {
+    public void isTerminalVerticalWin3x3() {
         Board board = new Board(3, 3)
                 .withMove(new Move(FRIENDLY, 0, 0))
                 .withMove(new Move(FRIENDLY, 0, 1))
@@ -59,7 +59,7 @@ public class BoardTest {
     }
 
     @Test
-    public void isTerminalHorizontalWin() {
+    public void isTerminalHorizontalWin3x3() {
         Board board = new Board(3, 3)
                 .withMove(new Move(FRIENDLY, 0, 0))
                 .withMove(new Move(FRIENDLY, 1, 0))
@@ -68,7 +68,7 @@ public class BoardTest {
     }
 
     @Test
-    public void isTerminalDiagonalWin1() {
+    public void isTerminalDiagonalWin13x3() {
         Board board = new Board(3, 3)
                 .withMove(new Move(FRIENDLY, 0, 0))
                 .withMove(new Move(FRIENDLY, 1, 1))
@@ -77,7 +77,7 @@ public class BoardTest {
     }
 
     @Test
-    public void isTerminalDiagonalWin2() {
+    public void isTerminalDiagonalWin23x3() {
         Board board = new Board(3, 3)
                 .withMove(new Move(FRIENDLY, 2, 0))
                 .withMove(new Move(FRIENDLY, 1, 1))
@@ -86,7 +86,7 @@ public class BoardTest {
     }
 
     @Test
-    public void isTerminalDraw() {
+    public void isTerminalDraw3x3() {
         //  F | O | F
         //  F | O | F
         //  O | F | O
@@ -105,12 +105,39 @@ public class BoardTest {
     }
 
     @Test
-    public void isTerminalFalse() {
-        assertNull(new Board().getWinner(3));
+    public void isTerminalDraw4x4() {
+        //  F | F | F | O
+        //  F | O | F | O
+        //  O | F | O | F
+        //  F | O | F | O
+        Board board = new Board(4, 4)
+                .withMove(new Move(FRIENDLY, 0, 0))
+                .withMove(new Move(FRIENDLY, 0, 1))
+                .withMove(new Move(OPPONENT, 0, 2))
+                .withMove(new Move(FRIENDLY, 0, 3))
+                .withMove(new Move(FRIENDLY, 1, 0))
+                .withMove(new Move(OPPONENT, 1, 1))
+                .withMove(new Move(FRIENDLY, 1, 2))
+                .withMove(new Move(OPPONENT, 1, 3))
+                .withMove(new Move(FRIENDLY, 2, 0))
+                .withMove(new Move(FRIENDLY, 2, 1))
+                .withMove(new Move(OPPONENT, 2, 2))
+                .withMove(new Move(FRIENDLY, 2, 3))
+                .withMove(new Move(OPPONENT, 3, 0))
+                .withMove(new Move(OPPONENT, 3, 1))
+                .withMove(new Move(FRIENDLY, 3, 2))
+                .withMove(new Move(OPPONENT, 3, 3));
+        assertTrue(board.isTerminal(4));
+        assertNull(board.getWinner(4));
     }
 
     @Test
-    public void getWinnerFriendly() {
+    public void isTerminalFalse3x3() {
+        assertNull(new Board(3,3).getWinner(3));
+    }
+
+    @Test
+    public void getWinnerFriendly3x3() {
 
         Board board = new Board(3, 3)
                 .withMove(new Move(FRIENDLY, 0, 0))
@@ -120,7 +147,7 @@ public class BoardTest {
     }
 
     @Test
-    public void getWinnerOpponent() {
+    public void getWinnerOpponent3x3() {
 
         Board board = new Board(3, 3)
                 .withMove(new Move(OPPONENT, 0, 0))
@@ -130,7 +157,7 @@ public class BoardTest {
     }
 
     @Test
-    public void getWinnerDraw() {
+    public void getWinnerDraw3x3() {
 
         Board board = new Board(3, 3)
                 .withMove(new Move(OPPONENT, 0, 0))
@@ -140,28 +167,28 @@ public class BoardTest {
     }
 
     @Test
-    public void isValidMoveTrue() {
+    public void isValidMoveTrue3x3() {
         Board board = new Board(3, 3);
         Move move = new Move(FRIENDLY, 0, 0);
         assertTrue(board.isValidMove(move));
     }
 
     @Test
-    public void isValidMoveFalse() {
+    public void isValidMoveFalse3x3() {
         Board board = new Board(3, 3);
         Move move = new Move(FRIENDLY, 3, 3);
         assertFalse(board.isValidMove(move));
     }
 
     @Test
-    public void isValidMoveFalseNeg() {
+    public void isValidMoveFalseNeg3x3() {
         Board board = new Board(3, 3);
         Move move = new Move(FRIENDLY, -1, -1);
         assertFalse(board.isValidMove(move));
     }
 
     @Test
-    public void print() {
+    public void print3x3() {
         String boardString = " F | F | O \n"
                            + " O |   |   \n"
                            + "   |   |   \n";

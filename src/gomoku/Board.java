@@ -58,7 +58,6 @@ class Board {
     }
 
     Boolean isTerminal(Integer winLength) {
-        // TODO optimize
         Boolean isDraw = true;
         for (int col = 0; col < width; col++) {
             for (int row = 0; row < height; row++) {

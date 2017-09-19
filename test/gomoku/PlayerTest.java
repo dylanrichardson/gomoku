@@ -25,11 +25,7 @@ public class PlayerTest {
 
     @Test
     public void play3x3MiniMax() {
-        cleanUpGame();
-        Thread threadA = startPlayer(playerA, new MiniMax());
-        Thread threadB = startPlayer(playerB, new MiniMax());
-        refGame(playerA, threadA, playerB, threadB);
-        cleanUpGame();
+        play(3, 3, 3, 10, new MiniMax());
 
         assertNull(exception);
         assertEquals(DRAW, resultA.getOutcome());
@@ -38,14 +34,39 @@ public class PlayerTest {
         assertEquals(9, resultB.getMoves().size());
     }
 
-    private void refGame(String playerA, Thread threadA, String playerB, Thread threadB) {
+    @Test
+    public void play4x4MiniMax() {
+        Debug.print = true;
+        Debug.debug = false;
+        play(4, 4, 4, 1000000, new MiniMax());
+
+        assertNull(exception);
+        assertEquals(DRAW, resultA.getOutcome());
+        assertEquals(DRAW, resultB.getOutcome());
+        assertEquals(16, resultA.getMoves().size());
+        assertEquals(16, resultB.getMoves().size());
+    }
+
+    private void play(Integer width, Integer height, Integer winLength, Integer timeout, Algorithm algorithm) {
+        cleanUpGame();
+        refGame(width, height, winLength, timeout, algorithm);
+        cleanUpGame();
+    }
+
+    private void refGame(Integer width, Integer height, Integer winLength, Integer timeout, Algorithm algorithm) {
         try {
-            Process p = Runtime.getRuntime().exec("python test/referee.py " + playerA + " " + playerB + " 3 3 3");
+            Thread threadA = startPlayer(playerA, width, height, winLength, timeout * 1000, algorithm);
+            Thread threadB = startPlayer(playerB, width, height, winLength, timeout * 1000, algorithm);
+
+            Process p = Runtime.getRuntime().exec("python test/referee.py " + playerA + " " + playerB + " "
+                    + width + " " + height + " " + winLength + " " + timeout);
+
             new StreamGobbler(p.getErrorStream()).start();
             new StreamGobbler(p.getInputStream()).start();
             p.waitFor();
             threadA.join();
             threadB.join();
+
             assertEquals(0, p.exitValue());
         } catch (IOException | InterruptedException e) {
             cleanUpGame();
@@ -53,9 +74,9 @@ public class PlayerTest {
         }
     }
 
-    private Thread startPlayer(String playerName, Algorithm algorithm) {
+    private Thread startPlayer(String playerName, Integer width, Integer height, Integer winLength, Integer timeout, Algorithm algorithm) {
         Thread thread = new Thread(() -> {
-            Result result = new Player(playerName, 3, 3, 3, algorithm).play();
+            Result result = new Player(new GameCommunication(playerName, timeout), new Board(width, height), winLength, algorithm).play();
             Debug.print(result);
             if (playerName.equals(playerA))
                 resultA = result;
@@ -77,10 +98,16 @@ public class PlayerTest {
         tryDelete(END_GAME);
     }
 
+    private void tryDelete(String path) {
+        try {
+            Files.delete(Paths.get(path));
+        } catch (IOException ignored) {
+        }
+    }
+
     class StreamGobbler extends Thread {
         final InputStream is;
 
-        // reads everything from is until empty.
         StreamGobbler(InputStream is) {
             this.is = is;
         }
@@ -95,13 +122,6 @@ public class PlayerTest {
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }
-        }
-    }
-
-    private void tryDelete(String path) {
-        try {
-            Files.delete(Paths.get(path));
-        } catch (IOException ignored) {
         }
     }
 
