@@ -38,12 +38,10 @@ class Result {
 
     @Override
     public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Outcome: " + outcome + "\n");
-        stringBuilder.append("End reason: " + endReason + "\n");
-        stringBuilder.append("Duration: " + duration + "\n");
-        stringBuilder.append("Board: " + board + "\n");
-        stringBuilder.append("Moves: " + moves + "\n");
-        return stringBuilder.toString();
+        return  "Outcome: " + outcome + "\n" +
+                "End reason: " + endReason + "\n" +
+                "Duration: " + duration + "\n" +
+                "Board: " + board + "\n" +
+                "Moves: " + moves + "\n";
     }
 }

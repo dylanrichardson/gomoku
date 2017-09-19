@@ -1,8 +1,6 @@
 package gomoku;
 
-import java.util.Objects;
 import java.util.OptionalDouble;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.DoubleStream;
 
@@ -14,7 +12,7 @@ class MiniMax implements Algorithm {
 
     @Override
     public Double evaluateMove(Move move, Board board, Integer winLength) {
-//        System.out.println(move);
+        Debug.print(move);
         Board newBoard = board.withMove(move);
         if (move.getStone() == FRIENDLY) {
             return getMinValue(newBoard, "", winLength);
@@ -48,15 +46,16 @@ class MiniMax implements Algorithm {
             return DRAW_VALUE;
         }
 
-        // for debugging
-//        System.out.println(tab + stone.toString());
+        Debug.print(tab + stone.toString());
 
-        DoubleStream moveValues = getPossibleMoves(stone.getOpponent(), board)
-                .mapToDouble((move) -> {/*System.out.println(tab + move);*/return getNextExtremeValue.apply(board.withMove(move), tab, winLength);});
+        DoubleStream moveValues = getPossibleMoves(stone.getOpponent(), board).mapToDouble((move) -> {
+            Debug.print(tab + move);
+            return getNextExtremeValue.apply(board.withMove(move), tab, winLength);
+        });
         OptionalDouble extremeValue = getValue.apply(moveValues);
 
         if (extremeValue.isPresent()) {
-//            System.out.println(tab + " - " + extremeValue.getAsDouble());
+            Debug.print(tab + " - " + extremeValue.getAsDouble());
             return extremeValue.getAsDouble();
         } else {
             throw NO_MOVES_LEFT;
@@ -65,13 +64,6 @@ class MiniMax implements Algorithm {
 
     @FunctionalInterface
     interface TriFunction<A,B,C,R> {
-
         R apply(A a, B b, C c);
-
-        default <V> TriFunction<A, B, C, V> andThen(
-                Function<? super R, ? extends V> after) {
-            Objects.requireNonNull(after);
-            return (A a, B b, C c) -> after.apply(apply(a, b, c));
-        }
     }
 }

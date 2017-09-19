@@ -17,18 +17,18 @@ import static org.junit.Assert.*;
 public class PlayerTest {
 
 
-    private String playerA = "A";
+    private final String playerA = "A";
     private Result resultA;
-    private String playerB = "B";
+    private final String playerB = "B";
     private Result resultB;
     private Throwable exception;
 
     @Test
-    public void play() {
+    public void play3x3MiniMax() {
         cleanUpGame();
-        startPlayer(playerA);
-        startPlayer(playerB);
-        refGame(playerA, playerB);
+        Thread threadA = startPlayer(playerA, new MiniMax());
+        Thread threadB = startPlayer(playerB, new MiniMax());
+        refGame(playerA, threadA, playerB, threadB);
         cleanUpGame();
 
         assertNull(exception);
@@ -36,12 +36,14 @@ public class PlayerTest {
         assertEquals(DRAW, resultB.getOutcome());
     }
 
-    private void refGame(String playerA, String playerB) {
+    private void refGame(String playerA, Thread threadA, String playerB, Thread threadB) {
         try {
             Process p = Runtime.getRuntime().exec("python test/referee.py " + playerA + " " + playerB + " 3 3 3");
             new StreamGobbler(p.getErrorStream()).start();
             new StreamGobbler(p.getInputStream()).start();
             p.waitFor();
+            threadA.join();
+            threadB.join();
             assertEquals(0, p.exitValue());
         } catch (IOException | InterruptedException e) {
             cleanUpGame();
@@ -49,16 +51,20 @@ public class PlayerTest {
         }
     }
 
-    private void startPlayer(String playerName) {
+    private Thread startPlayer(String playerName, Algorithm algorithm) {
         Thread thread = new Thread(() -> {
-            Result result = new Player(playerName, 3, 3, 3, new MiniMax()).play();
+            Result result = new Player(playerName, 3, 3, 3, algorithm).play();
             if (playerName.equals(playerA))
                 resultA = result;
             else
                 resultB = result;
         });
-        thread.setUncaughtExceptionHandler((th, ex) -> exception = ex);
+        thread.setUncaughtExceptionHandler((th, e) -> {
+            exception = e;
+            e.printStackTrace();
+        });
         thread.start();
+        return thread;
     }
 
     private void cleanUpGame() {
@@ -69,7 +75,7 @@ public class PlayerTest {
     }
 
     class StreamGobbler extends Thread {
-        InputStream is;
+        final InputStream is;
 
         // reads everything from is until empty.
         StreamGobbler(InputStream is) {
@@ -82,7 +88,7 @@ public class PlayerTest {
                 BufferedReader br = new BufferedReader(isr);
                 String line;
                 while ( (line = br.readLine()) != null)
-                    System.out.println(line);
+                    Debug.print(line);
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }

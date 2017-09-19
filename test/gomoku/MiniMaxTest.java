@@ -13,7 +13,7 @@ public class MiniMaxTest {
     // 3 x 3
 
     @Test
-    public void chooseMoveFriendly() {
+    public void chooseMoveFriendlyBlock() {
         // O |   |
         // O | F |
         //(F)|   |
@@ -30,7 +30,7 @@ public class MiniMaxTest {
     }
 
     @Test
-    public void chooseMoveOpponent() {
+    public void chooseMoveOpponentBlock() {
         // O |   |
         // O | F |
         //(O)|   |
@@ -60,16 +60,49 @@ public class MiniMaxTest {
     }
 
     @Test
-    public void evaluateMoveLoss() {
+    public void evaluateMoveLoss1() {
         //  O | O |
-        //    |   |(F)
+        //  F |   |(F)
         //    |   |
         Board board = new Board(3, 3)
                 .withMove(new Move(OPPONENT, 0, 0))
+                .withMove(new Move(FRIENDLY, 0, 1))
                 .withMove(new Move(OPPONENT, 1, 0));
         Move move = new Move(FRIENDLY, 2, 1);
 
         assertEquals(LOSS_VALUE, new MiniMax().evaluateMove(move, board, 3), 0.0);
+    }
+
+    @Test
+    public void evaluateMoveLoss2() {
+        // F |(F)|
+        // F | O |
+        // O |   |
+        Board board = new Board(3, 3)
+                .withMove(new Move(FRIENDLY, 0, 0))
+                .withMove(new Move(OPPONENT, 1, 1))
+                .withMove(new Move(FRIENDLY, 0, 1))
+                .withMove(new Move(OPPONENT, 0, 2));
+
+        Move move = new Move(FRIENDLY, 1, 0);
+
+        assertEquals(LOSS_VALUE, new MiniMax().evaluateMove(move, board, 3), 0.0);
+    }
+
+    @Test
+    public void chooseMove2() {
+        // F |   |(F)
+        // F | O |
+        // O |   |
+        Board board = new Board(3, 3)
+                .withMove(new Move(FRIENDLY, 0, 0))
+                .withMove(new Move(OPPONENT, 1, 1))
+                .withMove(new Move(FRIENDLY, 0, 1))
+                .withMove(new Move(OPPONENT, 0, 2));
+
+        Move move = new Move(FRIENDLY, 2, 0);
+
+        assertEquals(move, new MiniMax().chooseMove(FRIENDLY, board, 3));
     }
 
     @Test

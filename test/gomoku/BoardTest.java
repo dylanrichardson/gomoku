@@ -68,7 +68,7 @@ public class BoardTest {
     }
 
     @Test
-    public void isTerminalDiagonalWin() {
+    public void isTerminalDiagonalWin1() {
         Board board = new Board(3, 3)
                 .withMove(new Move(FRIENDLY, 0, 0))
                 .withMove(new Move(FRIENDLY, 1, 1))
@@ -77,10 +77,19 @@ public class BoardTest {
     }
 
     @Test
+    public void isTerminalDiagonalWin2() {
+        Board board = new Board(3, 3)
+                .withMove(new Move(FRIENDLY, 2, 0))
+                .withMove(new Move(FRIENDLY, 1, 1))
+                .withMove(new Move(FRIENDLY, 0, 2));
+        assertEquals(FRIENDLY, board.getWinner(3));
+    }
+
+    @Test
     public void isTerminalDraw() {
-        // O | O | X
-        // X | X | O
-        // O | O | X
+        //  F | O | F
+        //  F | O | F
+        //  O | F | O
         Board board = new Board(3, 3)
                 .withMove(new Move(FRIENDLY, 0, 0))
                 .withMove(new Move(FRIENDLY, 0, 1))

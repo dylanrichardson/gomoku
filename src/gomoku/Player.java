@@ -2,13 +2,9 @@ package gomoku;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import static gomoku.Stone.FRIENDLY;
 
 class Player {
-
-    private static final Integer WIN_LENGTH = 5;
-    private static final Integer BOARD_SIDE = 15;
 
     private final GameCommunication gameCommunication;
     private final List<Move> moves;
@@ -16,7 +12,7 @@ class Player {
 
     // mutable
     private Board board;
-    private Algorithm algorithm;
+    private final Algorithm algorithm;
 
     private Player(GameCommunication gameCommunication, Board board, Integer winLength, Algorithm algorithm) {
         this.gameCommunication = gameCommunication;
@@ -26,8 +22,8 @@ class Player {
         this.algorithm = algorithm;
     }
 
-    Player(String playerName) {
-        this(playerName, BOARD_SIDE, BOARD_SIDE, WIN_LENGTH, new MiniMax());
+    Player(String playerName, Integer width, Integer height, Integer winLength) {
+        this(playerName, width, height, winLength, new MiniMax());
     }
 
     Player(String playerName, Integer width, Integer height, Integer winLength, Algorithm algorithm) {
@@ -37,17 +33,26 @@ class Player {
     Result play() {
         // TODO handle special 2nd move of game
         Long startTime = System.nanoTime();
+        int round = 0;
         while (true) {
+            Debug.print("\n\nROUND - " + round++ + (System.nanoTime() - startTime) / 10000000000L + "s\n\n");
+            Debug.print("Waiting...");
+            gameCommunication.waitForOpponentMove();
             readMove();
-            if (gameCommunication.isOver()) {
+            if (gameCommunication.isOver() || board.isTerminal(winLength)) {
                 return getResult(System.nanoTime() - startTime);
             }
             makeMove();
+//            try {
+//                Files.delete(Paths.get("TEST.go"));
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
         }
     }
 
     private void readMove() {
-        Move move = gameCommunication.waitForOpponentMove();
+        Move move = gameCommunication.readMove();
         if (board.isValidMove(move)) {
             moves.add(move);
             board = board.withMove(move);
@@ -55,10 +60,13 @@ class Player {
     }
 
     private void makeMove() {
+        Debug.print(board);
+        Debug.print("Choosing move...");
         Move move = algorithm.chooseMove(FRIENDLY, board, winLength);
         moves.add(move);
         board = board.withMove(move);
         gameCommunication.writeMove(move);
+        Debug.print(board);
     }
 
     private Result getResult(Long duration) {

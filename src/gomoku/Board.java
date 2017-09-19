@@ -9,6 +9,7 @@ import java.util.stream.IntStream;
 
 import static gomoku.Stone.FRIENDLY;
 import static gomoku.Stone.OPPONENT;
+import static java.lang.Math.floor;
 
 class Board {
 
@@ -53,7 +54,7 @@ class Board {
     }
 
     Stone getStoneInCell(Integer column, Integer row) {
-        return (column < width && row < height) ? cells[column][row] : null;
+        return (column >= 0 && column < width && row >= 0 && row < height) ? cells[column][row] : null;
     }
 
     Boolean isTerminal(Integer winLength) {
@@ -96,7 +97,8 @@ class Board {
     }
 
     private Boolean isDiagonalWin(Integer col, Integer row, Integer winLength) {
-        return allSame(getDiagonalStones(col, row, winLength));
+        return allSame(getPositiveDiagonalStones(col, row, winLength))
+                || allSame(getNegativeDiagonalStones(col, row, winLength));
     }
 
     private <T> Boolean allSame(Collection<T> cells) {
@@ -119,15 +121,32 @@ class Board {
         return getStones(length, r -> getStoneInCell(col + r, row));
     }
 
-    private Collection<Stone> getDiagonalStones(Integer col, Integer row, Integer length) {
-        return getStones(length, r -> getStoneInCell(col + r, row + r));
+    private Collection<Stone> getPositiveDiagonalStones(Integer col, Integer row, Integer length) {
+        return getDiagonalStones(col, row, length, true);
+    }
+
+    private Collection<Stone> getNegativeDiagonalStones(Integer col, Integer row, Integer length) {
+        return getDiagonalStones(col, row, length, false);
+    }
+
+    private Collection<Stone> getDiagonalStones(Integer col, Integer row, Integer length, Boolean positive) {
+        // TODO optimize (return empty if near border)
+        Integer mod = (positive) ? 1 : -1;
+        return getStones(
+                (int) floor(- length / 2.0),
+                (int) floor(length / 2.0),
+                r -> getStoneInCell(col + r, row + mod * r));
+    }
+
+    private Collection<Stone> getStones(Integer start, Integer end, Function<Integer, Stone> getStone) {
+        return IntStream
+                .range(start, end)
+                .mapToObj(getStone::apply)
+                .collect(Collectors.toList());
     }
 
     private Collection<Stone> getStones(Integer length, Function<Integer, Stone> getStone) {
-        return IntStream
-                .range(0, length)
-                .mapToObj(getStone::apply)
-                .collect(Collectors.toList());
+        return getStones(0, length, getStone);
     }
 
     Boolean isValidMove(Move move) {
