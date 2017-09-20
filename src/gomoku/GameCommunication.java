@@ -67,11 +67,10 @@ class GameCommunication {
 
     void writeMove(Move move) {
         try {
-            Thread.sleep(1000); // TODO remove this line
             Debug.print("\n\n" + playerName + " made move " + move + "\n\n");
             Files.write(Paths.get(MOVE_FILE), singleton(playerName + " " + move.getCell()));
             Files.delete(Paths.get(playerFile(playerName)));
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

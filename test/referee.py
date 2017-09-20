@@ -353,7 +353,7 @@ def play_gomoku(team1, team2):
             move_msg = "" #"KEEP GOING!"
 
         move_file_mod_info = writeMoveFile(move, move_msg, move_file_name)
-
+        time.sleep(1)
 
         #playing_game = False
         logging.info("")

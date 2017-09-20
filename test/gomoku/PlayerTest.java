@@ -23,29 +23,29 @@ public class PlayerTest {
     private Result resultB;
     private Throwable exception;
 
-    @Test
-    public void play3x3MiniMax() {
-        play(3, 3, 3, 10, new MiniMax());
-
-        assertNull(exception);
-        assertEquals(DRAW, resultA.getOutcome());
-        assertEquals(DRAW, resultB.getOutcome());
-        assertEquals(9, resultA.getMoves().size());
-        assertEquals(9, resultB.getMoves().size());
-    }
-
-    @Test
-    public void play4x4MiniMax() {
-        Debug.print = true;
-        Debug.debug = false;
-        play(4, 4, 4, 1000000, new MiniMax());
-
-        assertNull(exception);
-        assertEquals(DRAW, resultA.getOutcome());
-        assertEquals(DRAW, resultB.getOutcome());
-        assertEquals(16, resultA.getMoves().size());
-        assertEquals(16, resultB.getMoves().size());
-    }
+//    @Test
+//    public void play3x3MiniMax() {
+//        play(3, 3, 3, 10, new MiniMax());
+//
+//        assertNull(exception);
+//        assertEquals(DRAW, resultA.getOutcome());
+//        assertEquals(DRAW, resultB.getOutcome());
+//        assertEquals(9, resultA.getMoves().size());
+//        assertEquals(9, resultB.getMoves().size());
+//    }
+//
+//    @Test
+//    public void play4x4MiniMax() {
+//        Debug.print = true;
+//        Debug.debug = false;
+//        play(4, 4, 4, 1000000, new MiniMax());
+//
+//        assertNull(exception);
+//        assertEquals(DRAW, resultA.getOutcome());
+//        assertEquals(DRAW, resultB.getOutcome());
+//        assertEquals(16, resultA.getMoves().size());
+//        assertEquals(16, resultB.getMoves().size());
+//    }
 
     private void play(Integer width, Integer height, Integer winLength, Integer timeout, Algorithm algorithm) {
         cleanUpGame();
