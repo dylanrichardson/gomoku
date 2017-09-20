@@ -3,8 +3,7 @@
     <output-path>$PROJECT_DIR$/out/artifacts/gomoku_jar</output-path>
     <root id="archive" name="gomoku.jar">
       <element id="module-output" name="gomoku" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/tools.jar" path-in-jar="/" />
-      <element id="library" level="project" name="tools" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/tools.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
