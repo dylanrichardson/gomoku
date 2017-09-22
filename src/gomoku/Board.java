@@ -3,24 +3,26 @@ package gomoku;
 import com.sun.tools.javac.util.Pair;
 
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static gomoku.Algorithm.DRAW_VALUE;
+import static gomoku.Algorithm.LOSS_VALUE;
+import static gomoku.Algorithm.WIN_VALUE;
 import static gomoku.Stone.FRIENDLY;
 import static gomoku.Stone.OPPONENT;
 import static java.lang.Math.floor;
 
 class Board {
 
+    private static final ExecutorService threadPool = Executors.newCachedThreadPool();
+
     private final Stone[][] cells;
     private final Integer width;
     private final Integer height;
     private final Map<Integer, Stone> winners = new HashMap<>();
-
-    Board() {
-        this(15, 15);
-    }
 
     private Board(Integer width, Integer height, Stone[][] cells) {
         this.cells = cells;
@@ -81,6 +83,7 @@ class Board {
         return winners.get(winLength);
     }
 
+    // true if the cell is the left/top most of a win
     private Boolean isTerminalCell(Integer col, Integer row, Integer winLength) {
         return isVerticalWin(col, row, winLength)
                 || isHorizontalWin(col, row, winLength)
@@ -178,5 +181,43 @@ class Board {
         if (stone == OPPONENT)
             return "O";
         return " ";
+    }
+
+    Boolean isTerminalMove(Move move, Integer winLength) {
+        // TODO
+        return false;
+    }
+
+    Boolean isBlockingMove(Move move, Integer winLength) {
+        // would be loss if opponent moved there
+        Move oppMove = new Move(move.getStone().getOpponent(), move.getColumn(), move.getRow());
+        return isTerminalMove(oppMove, winLength);
+    }
+
+    Double getValue(Integer winLength, Long timeLimit) {
+        Double value = null;
+        Future<Boolean> future = threadPool.submit(() -> isTerminal(winLength));
+        try {
+            Boolean isTerminal = future.get(timeLimit, TimeUnit.NANOSECONDS);
+            if (isTerminal) {
+                Stone winner = getWinner(winLength);
+                if (winner == FRIENDLY)
+                    value = WIN_VALUE;
+                else if (winner == OPPONENT)
+                    value = LOSS_VALUE;
+                else
+                    value = DRAW_VALUE;
+            }
+        } catch (TimeoutException ex) {
+            Debug.debug("Out of time");
+            // TODO add heuristic
+            value = DRAW_VALUE;
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            value =  DRAW_VALUE;
+        } finally {
+            future.cancel(true);
+        }
+        return value;
     }
 }

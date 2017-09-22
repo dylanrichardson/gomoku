@@ -26,31 +26,31 @@ public class PlayerTest {
     private Result resultB;
     private Throwable exception;
 
-    @Test
-    public void play3x3() {
-        Debug.print = true;
-        play(3, 3, 3, new AlgorithmImpl());
-
-        assertNull(exception);
-        assertEquals(DRAW, resultA.getOutcome());
-        assertEquals(DRAW, resultB.getOutcome());
-        assertEquals(9, resultA.getMoves().size());
-        assertEquals(9, resultB.getMoves().size());
-    }
-
-
-    @Test
-    public void play4x4() {
-        Debug.print = true;
-        Debug.debug = false;
-        play(4, 4, 4, new AlgorithmImpl());
-
-        assertNull(exception);
-        assertEquals(DRAW, resultA.getOutcome());
-        assertEquals(DRAW, resultB.getOutcome());
-        assertEquals(16, resultA.getMoves().size());
-        assertEquals(16, resultB.getMoves().size());
-    }
+//    @Test
+//    public void play3x3() {
+//        Debug.print = true;
+//        play(3, 3, 3, new AlgorithmImpl());
+//
+//        assertNull(exception);
+//        assertEquals(DRAW, resultA.getOutcome());
+//        assertEquals(DRAW, resultB.getOutcome());
+//        assertEquals(9, resultA.getMoves().size());
+//        assertEquals(9, resultB.getMoves().size());
+//    }
+//
+//
+//    @Test
+//    public void play4x4() {
+//        Debug.print = true;
+//        Debug.debug = false;
+//        play(4, 4, 4, new AlgorithmImpl());
+//
+//        assertNull(exception);
+//        assertEquals(DRAW, resultA.getOutcome());
+//        assertEquals(DRAW, resultB.getOutcome());
+//        assertEquals(16, resultA.getMoves().size());
+//        assertEquals(16, resultB.getMoves().size());
+//    }
 
     private void play(Integer width, Integer height, Integer winLength, Algorithm algorithm) {
         cleanUpGame();

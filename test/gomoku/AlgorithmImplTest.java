@@ -10,6 +10,8 @@ import static org.junit.Assert.*;
 
 public class AlgorithmImplTest {
 
+    private final Algorithm algorithm = new AlgorithmImpl();
+
     // 3 x 3
 
     @Test
@@ -25,9 +27,9 @@ public class AlgorithmImplTest {
         Move move = new Move(FRIENDLY, 0, 2);
 
 
-        Double evaluation = new AlgorithmImpl().evaluateMove(new Move(FRIENDLY, 1, 2), board, 3, TIME_LIMIT);
+        Double evaluation = algorithm.evaluateMove(new Move(FRIENDLY, 1, 2), board, 3, TIME_LIMIT);
         assertEquals(LOSS_VALUE, evaluation);
-        assertEquals(move, new AlgorithmImpl().chooseMove(FRIENDLY, board, 3, TIME_LIMIT));
+        assertEquals(move, algorithm.chooseMove(FRIENDLY, board, 3, TIME_LIMIT));
     }
 
     @Test
@@ -42,9 +44,9 @@ public class AlgorithmImplTest {
 
         Move move = new Move(OPPONENT, 0, 2);
 
-        Double evaluation = new AlgorithmImpl().evaluateMove(new Move(OPPONENT, 0, 2), board, 3, TIME_LIMIT);
+        Double evaluation = algorithm.evaluateMove(new Move(OPPONENT, 0, 2), board, 3, TIME_LIMIT);
         assertEquals(LOSS_VALUE, evaluation, 0.0);
-        assertEquals(move, new AlgorithmImpl().chooseMove(OPPONENT, board, 3, TIME_LIMIT));
+        assertEquals(move, algorithm.chooseMove(OPPONENT, board, 3, TIME_LIMIT));
     }
 
     @Test
@@ -57,7 +59,7 @@ public class AlgorithmImplTest {
                 .withMove(new Move(FRIENDLY, 1, 0));
         Move move = new Move(FRIENDLY, 2, 0);
 
-        assertEquals(WIN_VALUE, new AlgorithmImpl().evaluateMove(move, board, 3, TIME_LIMIT), 0.0);
+        assertEquals(WIN_VALUE, algorithm.evaluateMove(move, board, 3, TIME_LIMIT), 0.0);
     }
 
     @Test
@@ -71,7 +73,7 @@ public class AlgorithmImplTest {
                 .withMove(new Move(OPPONENT, 1, 0));
         Move move = new Move(FRIENDLY, 2, 1);
 
-        assertEquals(LOSS_VALUE, new AlgorithmImpl().evaluateMove(move, board, 3, TIME_LIMIT), 0.0);
+        assertEquals(LOSS_VALUE, algorithm.evaluateMove(move, board, 3, TIME_LIMIT), 0.0);
     }
 
     @Test
@@ -87,7 +89,7 @@ public class AlgorithmImplTest {
 
         Move move = new Move(FRIENDLY, 1, 0);
 
-        assertEquals(LOSS_VALUE, new AlgorithmImpl().evaluateMove(move, board, 3, TIME_LIMIT), 0.0);
+        assertEquals(LOSS_VALUE, algorithm.evaluateMove(move, board, 3, TIME_LIMIT), 0.0);
     }
 
     @Test
@@ -103,7 +105,7 @@ public class AlgorithmImplTest {
 
         Move move = new Move(FRIENDLY, 2, 0);
 
-        assertEquals(move, new AlgorithmImpl().chooseMove(FRIENDLY, board, 3, TIME_LIMIT));
+        assertEquals(move, algorithm.chooseMove(FRIENDLY, board, 3, TIME_LIMIT));
     }
 
     @Test
@@ -122,7 +124,7 @@ public class AlgorithmImplTest {
         Move move = new Move(FRIENDLY, 0, 2);
 
 
-        assertEquals(LOSS_VALUE, new AlgorithmImpl().evaluateMove(move, board, 3, TIME_LIMIT), 0.0);
+        assertEquals(LOSS_VALUE, algorithm.evaluateMove(move, board, 3, TIME_LIMIT), 0.0);
     }
 
     @Test
@@ -141,7 +143,7 @@ public class AlgorithmImplTest {
         Move move = new Move(OPPONENT, 0, 2);
 
 
-        assertEquals(WIN_VALUE, new AlgorithmImpl().evaluateMove(move, board, 3, TIME_LIMIT), 0.0);
+        assertEquals(WIN_VALUE, algorithm.evaluateMove(move, board, 3, TIME_LIMIT), 0.0);
     }
 
     @Test
@@ -158,7 +160,7 @@ public class AlgorithmImplTest {
                 .withMove(new Move(OPPONENT, 1, 0));
         Move move = new Move(FRIENDLY, 0, 2);
 
-        assertEquals(LOSS_VALUE, new AlgorithmImpl().evaluateMove(move, board, 3, TIME_LIMIT), 0.0);
+        assertEquals(LOSS_VALUE, algorithm.evaluateMove(move, board, 3, TIME_LIMIT), 0.0);
     }
 
     // 4 x 4
@@ -175,7 +177,7 @@ public class AlgorithmImplTest {
                 .withMove(new Move(FRIENDLY, 2, 0));
         Move move = new Move(FRIENDLY, 3, 0);
 
-        assertEquals(WIN_VALUE, new AlgorithmImpl().evaluateMove(move, board, 4, TIME_LIMIT), 0.0);
+        assertEquals(WIN_VALUE, algorithm.evaluateMove(move, board, 4, TIME_LIMIT), 0.0);
     }
 
     @Test
@@ -190,7 +192,7 @@ public class AlgorithmImplTest {
                 .withMove(new Move(FRIENDLY, 2, 0));
         Move move = new Move(OPPONENT, 3, 0);
 
-        assertEquals(WIN_VALUE, new AlgorithmImpl().evaluateMove(move, board, 4, TIME_LIMIT), 0.0);
+        assertEquals(WIN_VALUE, algorithm.evaluateMove(move, board, 4, TIME_LIMIT), 0.0);
     }
 
     @Test
@@ -202,7 +204,7 @@ public class AlgorithmImplTest {
         Board board = new Board(4, 4);
         Move move = new Move(FRIENDLY, 0, 0);
 
-        assertEquals(DRAW_VALUE, new AlgorithmImpl().evaluateMove(move, board, 4, TIME_LIMIT), 0.0);
+        assertEquals(DRAW_VALUE, algorithm.evaluateMove(move, board, 4, TIME_LIMIT), 0.0);
     }
 
     // time limit
@@ -215,9 +217,22 @@ public class AlgorithmImplTest {
         //    |   |   |
         Board board = new Board(4, 4);
         Long startTime = System.nanoTime();
-        new AlgorithmImpl().chooseMove(FRIENDLY, board, 4, TIME_LIMIT);
+        algorithm.chooseMove(FRIENDLY, board, 4, TIME_LIMIT);
         Long duration = System.nanoTime() - startTime;
-        assertTrue("expected: " + TIME_LIMIT + "actual: " + duration,duration < TIME_LIMIT);
+        assertTrue("expected: " + TIME_LIMIT + " actual: " + duration,duration < TIME_LIMIT);
+    }
+
+    @Test
+    public void evaluateMoveInTimeLimit() {
+        //    |   |   |
+        //    |   |   |
+        //    |   |   |
+        //    |   |   |
+        Board board = new Board(4, 4);
+        Long startTime = System.nanoTime();
+        algorithm.evaluateMove(new Move(FRIENDLY, 0, 0), board, 4, TIME_LIMIT);
+        Long duration = System.nanoTime() - startTime;
+        assertTrue("expected: " + TIME_LIMIT + " actual: " + duration,duration < TIME_LIMIT);
     }
 
 }

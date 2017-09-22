@@ -200,4 +200,6 @@ public class BoardTest {
         assertEquals(boardString, board.toString());
     }
 
+    // TODO add tests for isTerminalMove/isTerminal on 4x4 3 win length
+
 }

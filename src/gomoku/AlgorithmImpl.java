@@ -10,13 +10,11 @@ import static gomoku.Stone.OPPONENT;
 
 class AlgorithmImpl implements Algorithm {
 
-    private ExecutorService threadPool = Executors.newCachedThreadPool();
-
     @Override
     public Double evaluateMove(Move move, Board board, Integer winLength, Double timeLimit) {
         Long startTime = System.nanoTime();
         Boolean isFriendly = move.getStone() == FRIENDLY;
-        if (blocksWin(move, board)) {
+        if (board.isBlockingMove(move, winLength)) {
             return isFriendly ? WIN_VALUE : LOSS_VALUE;
         }
         Debug.debug(move);
@@ -28,23 +26,17 @@ class AlgorithmImpl implements Algorithm {
         }
     }
 
-    private Boolean blocksWin(Move move, Board board) {
-        // TODO
-        return false;
-    }
-
     private Double getMinValue(Board board, String tab, Integer winLength, Double timeLimit) {
-        return getExtremeValue(FRIENDLY, board, false, this::getMaxValue, tab + "   ", winLength, timeLimit);
+        return getExtremeValue(FRIENDLY, board, this::getMaxValue, tab + "   ", winLength, timeLimit);
     }
 
     private Double getMaxValue(Board board, String tab, Integer winLength, Double timeLimit) {
-        return getExtremeValue(OPPONENT, board, true, this::getMinValue, tab + "   ", winLength, timeLimit);
+        return getExtremeValue(OPPONENT, board, this::getMinValue, tab + "   ", winLength, timeLimit);
     }
 
     private Double getExtremeValue(
             Stone stone,
             Board board,
-            Boolean positive,
             QuadFunction<Board, String, Integer, Double, Double> getNextExtremeValue,
             String tab,
             Integer winLength,
@@ -52,31 +44,15 @@ class AlgorithmImpl implements Algorithm {
 
         Long startTime = System.nanoTime();
 
-        Future<Boolean> future = threadPool.submit(() -> board.isTerminal(winLength));
-        try {
-            Boolean isTerminal = future.get(getTimeLeft(startTime, timeLimit).longValue(), TimeUnit.NANOSECONDS);
-            if (isTerminal) {
-                Stone winner = board.getWinner(winLength);
-                if (winner == FRIENDLY)
-                    return WIN_VALUE;
-                if (winner == OPPONENT)
-                    return LOSS_VALUE;
-                return DRAW_VALUE;
-            }
-        } catch (TimeoutException ex) {
-            Debug.debug("Out of time");
-            // TODO add heuristic
-            return DRAW_VALUE;
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-            return DRAW_VALUE;
-        } finally {
-            future.cancel(true);
+        // check if terminal or out of time
+        Double boardValue = board.getValue(winLength, getTimeLeft(startTime, timeLimit).longValue());
+        if (boardValue != null) {
+            return boardValue;
         }
 
         Debug.debug(tab + stone.toString());
 
-        Integer mod = (positive) ? 1 : -1;
+        Integer mod = (stone == OPPONENT) ? 1 : -1;
         Double extremeScore = LOSS_VALUE * mod;
         Move extremeMove = null;
         List<Move> moves = getPossibleMoves(stone.getOpponent(), board).collect(Collectors.toList());
