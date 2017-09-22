@@ -18,18 +18,11 @@ class GameCommunication {
 
     static final String MOVE_FILE = "move_file";
     static final String END_GAME = "end_game";
-    private static final Integer TIME_LIMIT = 10000;
 
     private final String playerName;
-    private final Integer timeLimit;
 
     GameCommunication(String playerName) {
-        this(playerName, TIME_LIMIT);
-    }
-
-    GameCommunication(String playerName, Integer timeLimit) {
         this.playerName = playerName;
-        this.timeLimit = timeLimit;
     }
 
     Boolean isOver() {
@@ -37,17 +30,12 @@ class GameCommunication {
     }
 
     void waitForTurn() {
-        Integer totalDuration = 0;
-        Integer sleepDuration = 100;
         while (!Files.exists(Paths.get(playerFile(playerName)))) {
-            if (totalDuration > timeLimit)
-                throw new RuntimeException("Player waited longer than " + timeLimit / 1000 + " seconds");
             try {
-                Thread.sleep(sleepDuration);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            totalDuration += sleepDuration;
         }
     }
 
@@ -69,8 +57,9 @@ class GameCommunication {
         try {
             Debug.print("\n\n" + playerName + " made move " + move + "\n\n");
             Files.write(Paths.get(MOVE_FILE), singleton(playerName + " " + move.getCell()));
-            Files.delete(Paths.get(playerFile(playerName)));
-        } catch (IOException e) {
+            Thread.sleep(1000); // TODO remove this line
+//            Files.delete(Paths.get(playerFile(playerName)));
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }

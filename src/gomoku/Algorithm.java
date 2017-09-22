@@ -1,9 +1,5 @@
 package gomoku;
 
-import com.sun.tools.javac.util.Pair;
-
-import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -18,24 +14,33 @@ interface Algorithm {
 
     RuntimeException NO_MOVES_LEFT = new RuntimeException("No moves left to make");
 
-    default Move chooseMove(Stone stone, Board board, Integer winLength) {
+    default Move chooseMove(Stone stone, Board board, Integer winLength, Double timeLimit) {
+        Long startTime = System.nanoTime();
         Integer mod = (stone == FRIENDLY) ? 1 : -1;
         Move bestMove = null;
         Double bestScore = LOSS_VALUE;
         List<Move> moves = getPossibleMoves(stone, board).collect(Collectors.toList());
-        for (Move move : moves) {
-            Double score = mod * evaluateMove(move, board, winLength);
+
+        for (int i = 0; i < moves.size(); i++) {
+            Double newTimeLimit = getTimeLeft(startTime, timeLimit) / (moves.size() - i);
+
+            Double score = mod * evaluateMove(moves.get(i), board, winLength, newTimeLimit);
             if (score > bestScore) {
                 bestScore = score;
-                bestMove = move;
+                bestMove = moves.get(i);
                 if (score.equals(WIN_VALUE)) {
                     break;
                 }
             }
         }
+
         if (bestMove == null)
             throw NO_MOVES_LEFT;
         return bestMove;
+    }
+
+    default Double getTimeLeft(Long startTime, Double timeLeft) {
+        return timeLeft - (System.nanoTime() - startTime);
     }
 
     default Stream<Move> getPossibleMoves(Stone stone, Board board) {
@@ -45,5 +50,5 @@ interface Algorithm {
                 .map(cell -> new Move(stone, cell.fst, cell.snd));
     }
 
-    Double evaluateMove(Move move, Board board, Integer winLength);
+    Double evaluateMove(Move move, Board board, Integer winLength, Double timeLimit);
 }

@@ -2,14 +2,13 @@ package gomoku;
 
 import org.junit.Test;
 
-import static gomoku.Algorithm.DRAW_VALUE;
-import static gomoku.Algorithm.LOSS_VALUE;
-import static gomoku.Algorithm.WIN_VALUE;
+import static gomoku.Algorithm.*;
+import static gomoku.Player.TIME_LIMIT;
 import static gomoku.Stone.FRIENDLY;
 import static gomoku.Stone.OPPONENT;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
-public class MiniMaxTest {
+public class AlgorithmImplTest {
 
     // 3 x 3
 
@@ -26,8 +25,9 @@ public class MiniMaxTest {
         Move move = new Move(FRIENDLY, 0, 2);
 
 
-        assertEquals(LOSS_VALUE, new MiniMax().evaluateMove(new Move(FRIENDLY, 1, 2), board, 3), 0.0);
-        assertEquals(move, new MiniMax().chooseMove(FRIENDLY, board, 3));
+        Double evaluation = new AlgorithmImpl().evaluateMove(new Move(FRIENDLY, 1, 2), board, 3, TIME_LIMIT);
+        assertEquals(LOSS_VALUE, evaluation);
+        assertEquals(move, new AlgorithmImpl().chooseMove(FRIENDLY, board, 3, TIME_LIMIT));
     }
 
     @Test
@@ -42,9 +42,9 @@ public class MiniMaxTest {
 
         Move move = new Move(OPPONENT, 0, 2);
 
-
-        assertEquals(LOSS_VALUE, new MiniMax().evaluateMove(new Move(OPPONENT, 0, 2), board, 3), 0.0);
-        assertEquals(move, new MiniMax().chooseMove(OPPONENT, board, 3));
+        Double evaluation = new AlgorithmImpl().evaluateMove(new Move(OPPONENT, 0, 2), board, 3, TIME_LIMIT);
+        assertEquals(LOSS_VALUE, evaluation, 0.0);
+        assertEquals(move, new AlgorithmImpl().chooseMove(OPPONENT, board, 3, TIME_LIMIT));
     }
 
     @Test
@@ -57,7 +57,7 @@ public class MiniMaxTest {
                 .withMove(new Move(FRIENDLY, 1, 0));
         Move move = new Move(FRIENDLY, 2, 0);
 
-        assertEquals(WIN_VALUE, new MiniMax().evaluateMove(move, board, 3), 0.0);
+        assertEquals(WIN_VALUE, new AlgorithmImpl().evaluateMove(move, board, 3, TIME_LIMIT), 0.0);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class MiniMaxTest {
                 .withMove(new Move(OPPONENT, 1, 0));
         Move move = new Move(FRIENDLY, 2, 1);
 
-        assertEquals(LOSS_VALUE, new MiniMax().evaluateMove(move, board, 3), 0.0);
+        assertEquals(LOSS_VALUE, new AlgorithmImpl().evaluateMove(move, board, 3, TIME_LIMIT), 0.0);
     }
 
     @Test
@@ -87,7 +87,7 @@ public class MiniMaxTest {
 
         Move move = new Move(FRIENDLY, 1, 0);
 
-        assertEquals(LOSS_VALUE, new MiniMax().evaluateMove(move, board, 3), 0.0);
+        assertEquals(LOSS_VALUE, new AlgorithmImpl().evaluateMove(move, board, 3, TIME_LIMIT), 0.0);
     }
 
     @Test
@@ -103,7 +103,7 @@ public class MiniMaxTest {
 
         Move move = new Move(FRIENDLY, 2, 0);
 
-        assertEquals(move, new MiniMax().chooseMove(FRIENDLY, board, 3));
+        assertEquals(move, new AlgorithmImpl().chooseMove(FRIENDLY, board, 3, TIME_LIMIT));
     }
 
     @Test
@@ -122,7 +122,7 @@ public class MiniMaxTest {
         Move move = new Move(FRIENDLY, 0, 2);
 
 
-        assertEquals(LOSS_VALUE, new MiniMax().evaluateMove(move, board, 3), 0.0);
+        assertEquals(LOSS_VALUE, new AlgorithmImpl().evaluateMove(move, board, 3, TIME_LIMIT), 0.0);
     }
 
     @Test
@@ -141,7 +141,7 @@ public class MiniMaxTest {
         Move move = new Move(OPPONENT, 0, 2);
 
 
-        assertEquals(WIN_VALUE, new MiniMax().evaluateMove(move, board, 3), 0.0);
+        assertEquals(WIN_VALUE, new AlgorithmImpl().evaluateMove(move, board, 3, TIME_LIMIT), 0.0);
     }
 
     @Test
@@ -158,7 +158,7 @@ public class MiniMaxTest {
                 .withMove(new Move(OPPONENT, 1, 0));
         Move move = new Move(FRIENDLY, 0, 2);
 
-        assertEquals(LOSS_VALUE, new MiniMax().evaluateMove(move, board, 3), 0.0);
+        assertEquals(LOSS_VALUE, new AlgorithmImpl().evaluateMove(move, board, 3, TIME_LIMIT), 0.0);
     }
 
     // 4 x 4
@@ -175,7 +175,7 @@ public class MiniMaxTest {
                 .withMove(new Move(FRIENDLY, 2, 0));
         Move move = new Move(FRIENDLY, 3, 0);
 
-        assertEquals(WIN_VALUE, new MiniMax().evaluateMove(move, board, 4), 0.0);
+        assertEquals(WIN_VALUE, new AlgorithmImpl().evaluateMove(move, board, 4, TIME_LIMIT), 0.0);
     }
 
     @Test
@@ -190,19 +190,34 @@ public class MiniMaxTest {
                 .withMove(new Move(FRIENDLY, 2, 0));
         Move move = new Move(OPPONENT, 3, 0);
 
-        assertEquals(WIN_VALUE, new MiniMax().evaluateMove(move, board, 4), 0.0);
+        assertEquals(WIN_VALUE, new AlgorithmImpl().evaluateMove(move, board, 4, TIME_LIMIT), 0.0);
     }
 
-//    @Test
-//    public void evaluateMoveDraw4x4() {
-//        // (F)|   |   |
-//        //    |   |   |
-//        //    |   |   |
-//        //    |   |   |
-//        Board board = new Board(4, 4);
-//        Move move = new Move(FRIENDLY, 0, 0);
-//
-//        assertEquals(DRAW_VALUE, new MiniMax().evaluateMove(move, board, 4), 0.0);
-//    }
+    @Test
+    public void evaluateMoveDraw4x4() {
+        // (F)|   |   |
+        //    |   |   |
+        //    |   |   |
+        //    |   |   |
+        Board board = new Board(4, 4);
+        Move move = new Move(FRIENDLY, 0, 0);
+
+        assertEquals(DRAW_VALUE, new AlgorithmImpl().evaluateMove(move, board, 4, TIME_LIMIT), 0.0);
+    }
+
+    // time limit
+
+    @Test
+    public void chooseMoveInTimeLimit() {
+        //    |   |   |
+        //    |   |   |
+        //    |   |   |
+        //    |   |   |
+        Board board = new Board(4, 4);
+        Long startTime = System.nanoTime();
+        new AlgorithmImpl().chooseMove(FRIENDLY, board, 4, TIME_LIMIT);
+        Long duration = System.nanoTime() - startTime;
+        assertTrue("expected: " + TIME_LIMIT + "actual: " + duration,duration < TIME_LIMIT);
+    }
 
 }

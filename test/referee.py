@@ -295,6 +295,7 @@ def play_gomoku(team1, team2):
     while (playing_game):
         up_to_play = teams[ (game.turn % len(teams)) ]
         logging.info("%s's turn!" % up_to_play)
+        time.sleep(1)
 
         writeTeamGoFile(up_to_play)
         played_in_time = waitForPlay(move_file_mod_info, move_file_name)
@@ -353,7 +354,6 @@ def play_gomoku(team1, team2):
             move_msg = "" #"KEEP GOING!"
 
         move_file_mod_info = writeMoveFile(move, move_msg, move_file_name)
-        time.sleep(1)
 
         #playing_game = False
         logging.info("")

@@ -12,7 +12,10 @@ import java.nio.file.Paths;
 import static gomoku.GameCommunication.END_GAME;
 import static gomoku.GameCommunication.MOVE_FILE;
 import static gomoku.Outcome.DRAW;
-import static org.junit.Assert.*;
+import static gomoku.Player.TIME_LIMIT;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 public class PlayerTest {
 
@@ -23,43 +26,45 @@ public class PlayerTest {
     private Result resultB;
     private Throwable exception;
 
-//    @Test
-//    public void play3x3MiniMax() {
-//        play(3, 3, 3, 10, new MiniMax());
-//
-//        assertNull(exception);
-//        assertEquals(DRAW, resultA.getOutcome());
-//        assertEquals(DRAW, resultB.getOutcome());
-//        assertEquals(9, resultA.getMoves().size());
-//        assertEquals(9, resultB.getMoves().size());
-//    }
-//
-//    @Test
-//    public void play4x4MiniMax() {
-//        Debug.print = true;
-//        Debug.debug = false;
-//        play(4, 4, 4, 1000000, new MiniMax());
-//
-//        assertNull(exception);
-//        assertEquals(DRAW, resultA.getOutcome());
-//        assertEquals(DRAW, resultB.getOutcome());
-//        assertEquals(16, resultA.getMoves().size());
-//        assertEquals(16, resultB.getMoves().size());
-//    }
+    @Test
+    public void play3x3() {
+        Debug.print = true;
+        play(3, 3, 3, new AlgorithmImpl());
 
-    private void play(Integer width, Integer height, Integer winLength, Integer timeout, Algorithm algorithm) {
+        assertNull(exception);
+        assertEquals(DRAW, resultA.getOutcome());
+        assertEquals(DRAW, resultB.getOutcome());
+        assertEquals(9, resultA.getMoves().size());
+        assertEquals(9, resultB.getMoves().size());
+    }
+
+
+    @Test
+    public void play4x4() {
+        Debug.print = true;
+        Debug.debug = false;
+        play(4, 4, 4, new AlgorithmImpl());
+
+        assertNull(exception);
+        assertEquals(DRAW, resultA.getOutcome());
+        assertEquals(DRAW, resultB.getOutcome());
+        assertEquals(16, resultA.getMoves().size());
+        assertEquals(16, resultB.getMoves().size());
+    }
+
+    private void play(Integer width, Integer height, Integer winLength, Algorithm algorithm) {
         cleanUpGame();
-        refGame(width, height, winLength, timeout, algorithm);
+        refGame(width, height, winLength, algorithm);
         cleanUpGame();
     }
 
-    private void refGame(Integer width, Integer height, Integer winLength, Integer timeout, Algorithm algorithm) {
+    private void refGame(Integer width, Integer height, Integer winLength, Algorithm algorithm) {
         try {
-            Thread threadA = startPlayer(playerA, width, height, winLength, timeout * 1000, algorithm);
-            Thread threadB = startPlayer(playerB, width, height, winLength, timeout * 1000, algorithm);
+            Thread threadA = startPlayer(playerA, width, height, winLength, TIME_LIMIT, algorithm);
+            Thread threadB = startPlayer(playerB, width, height, winLength, TIME_LIMIT * 1000000000, algorithm);
 
             Process p = Runtime.getRuntime().exec("python test/referee.py " + playerA + " " + playerB + " "
-                    + width + " " + height + " " + winLength + " " + timeout);
+                    + width + " " + height + " " + winLength);
 
             new StreamGobbler(p.getErrorStream()).start();
             new StreamGobbler(p.getInputStream()).start();
@@ -74,9 +79,9 @@ public class PlayerTest {
         }
     }
 
-    private Thread startPlayer(String playerName, Integer width, Integer height, Integer winLength, Integer timeout, Algorithm algorithm) {
+    private Thread startPlayer(String playerName, Integer width, Integer height, Integer winLength, Double timeout, Algorithm algorithm) {
         Thread thread = new Thread(() -> {
-            Result result = new Player(new GameCommunication(playerName, timeout), new Board(width, height), winLength, algorithm).play();
+            Result result = new Player(new GameCommunication(playerName), new Board(width, height), winLength, timeout, algorithm).play();
             Debug.print(result);
             if (playerName.equals(playerA))
                 resultA = result;
