@@ -1,5 +1,6 @@
 package gomoku;
 
+import org.junit.After;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -21,12 +22,17 @@ import static java.util.Collections.singletonList;
 import static org.junit.Assert.*;
 
 public class GameCommunicationTest {
+    @After
+    public void cleanUp() {
+        tryDelete(Paths.get(END_GAME));
+        tryDelete(Paths.get(MOVE_FILE));
+    }
+
     @Test
     public void isOverTrue() {
         GameCommunication gameCommunication = new GameCommunication("test");
         addEndGame("");
         Boolean isOver = gameCommunication.isOver();
-        tryDelete(Paths.get(END_GAME));
 
         assertTrue(isOver);
     }
@@ -34,7 +40,6 @@ public class GameCommunicationTest {
     @Test
     public void isOverFalse() {
         GameCommunication gameCommunication = new GameCommunication("test");
-        tryDelete(Paths.get(END_GAME));
 
         assertFalse(gameCommunication.isOver());
     }
@@ -48,7 +53,8 @@ public class GameCommunicationTest {
         gameCommunication.writeMove(move);
 
         List<String> moveFile = Files.readAllLines(Paths.get(MOVE_FILE));
-        tryDelete(Paths.get(MOVE_FILE));
+
+        tryDelete(Paths.get(playerFile(playerName)));
 
         assertEquals(singletonList("test a 0"), moveFile);
     }

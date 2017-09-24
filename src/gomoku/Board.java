@@ -3,21 +3,16 @@ package gomoku;
 import com.sun.tools.javac.util.Pair;
 
 import java.util.*;
-import java.util.concurrent.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static gomoku.Algorithm.DRAW_VALUE;
-import static gomoku.Algorithm.LOSS_VALUE;
-import static gomoku.Algorithm.WIN_VALUE;
+import static gomoku.Algorithm.*;
 import static gomoku.Stone.FRIENDLY;
 import static gomoku.Stone.OPPONENT;
 import static java.lang.Math.floor;
 
 class Board {
-
-    private static final ExecutorService threadPool = Executors.newCachedThreadPool();
 
     private final Stone[][] cells;
     private final Integer width;
@@ -194,36 +189,15 @@ class Board {
         return isTerminalMove(oppMove, winLength);
     }
 
-    /**
-     * win - terminal
-     * loss - terminal
-     * draw - terminal
-     * heuristic - out of time
-     * null - not terminal and not out of time
-     */
-    Double getValue(Integer winLength, Double timeLimit, Function<Board, Double> heuristic) {
-        Double value = null;
-        Future<Boolean> future = threadPool.submit(() -> isTerminal(winLength));
-        try {
-            Boolean isTerminal = future.get(timeLimit.longValue(), TimeUnit.NANOSECONDS);
-            if (isTerminal) {
-                Stone winner = getWinner(winLength);
-                if (winner == FRIENDLY)
-                    value = WIN_VALUE;
-                else if (winner == OPPONENT)
-                    value = LOSS_VALUE;
-                else
-                    value = DRAW_VALUE;
-            }
-        } catch (TimeoutException ex) {
-            Debug.debug("Out of time");
-            value = heuristic.apply(this);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-            value =  DRAW_VALUE;
-        } finally {
-            future.cancel(true);
+    Double getValue(Integer winLength) {
+        if (isTerminal(winLength)) {
+            Stone winner = getWinner(winLength);
+            if (winner == FRIENDLY)
+                return WIN_VALUE;
+            if (winner == OPPONENT)
+                return LOSS_VALUE;
+            return DRAW_VALUE;
         }
-        return value;
+        return null;
     }
 }

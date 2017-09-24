@@ -6,6 +6,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collection;
 
+import static gomoku.Algorithm.DRAW_VALUE;
 import static gomoku.Stone.FRIENDLY;
 import static gomoku.Stone.OPPONENT;
 import static org.junit.Assert.*;
@@ -201,5 +202,24 @@ public class BoardTest {
     }
 
     // TODO add tests for isTerminalMove/isTerminal on 4x4 3 win length
+
+    @Test
+    public void getValueDraw() {
+        // F | O | F
+        // F | O | O
+        // O | F | F
+        Board board = new Board(3, 3)
+                .withMove(new Move(FRIENDLY, 0, 0))
+                .withMove(new Move(FRIENDLY, 0, 1))
+                .withMove(new Move(OPPONENT, 0, 2))
+                .withMove(new Move(OPPONENT, 1, 0))
+                .withMove(new Move(OPPONENT, 1, 1))
+                .withMove(new Move(FRIENDLY, 1, 2))
+                .withMove(new Move(FRIENDLY, 2, 0))
+                .withMove(new Move(OPPONENT, 2, 1))
+                .withMove(new Move(FRIENDLY, 2, 2));
+
+        assertEquals(DRAW_VALUE, board.getValue(3));
+    }
 
 }

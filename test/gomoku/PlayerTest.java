@@ -29,7 +29,7 @@ public class PlayerTest {
 //    @Test
 //    public void play3x3() {
 //        Debug.print = true;
-//        play(3, 3, 3, new AlgorithmImpl());
+//        play(3, 3, 3);
 //
 //        assertNull(exception);
 //        assertEquals(DRAW, resultA.getOutcome());
@@ -40,28 +40,26 @@ public class PlayerTest {
 //
 //
 //    @Test
-//    public void play4x4() {
-//        Debug.print = true;
-//        Debug.debug = false;
-//        play(4, 4, 4, new AlgorithmImpl());
+//    public void play15x15() {
+//        play(15, 15, 5);
 //
 //        assertNull(exception);
 //        assertEquals(DRAW, resultA.getOutcome());
 //        assertEquals(DRAW, resultB.getOutcome());
-//        assertEquals(16, resultA.getMoves().size());
-//        assertEquals(16, resultB.getMoves().size());
+//        assertEquals(15*15, resultA.getMoves().size());
+//        assertEquals(15*15, resultB.getMoves().size());
 //    }
 
-    private void play(Integer width, Integer height, Integer winLength, Algorithm algorithm) {
+    private void play(Integer width, Integer height, Integer winLength) {
         cleanUpGame();
-        refGame(width, height, winLength, algorithm);
+        refGame(width, height, winLength);
         cleanUpGame();
     }
 
-    private void refGame(Integer width, Integer height, Integer winLength, Algorithm algorithm) {
+    private void refGame(Integer width, Integer height, Integer winLength) {
         try {
-            Thread threadA = startPlayer(playerA, width, height, winLength, TIME_LIMIT, algorithm);
-            Thread threadB = startPlayer(playerB, width, height, winLength, TIME_LIMIT * 1000000000, algorithm);
+            Thread threadA = startPlayer(playerA, width, height, winLength, TIME_LIMIT);
+            Thread threadB = startPlayer(playerB, width, height, winLength, TIME_LIMIT * 1000000000);
 
             Process p = Runtime.getRuntime().exec("python test/referee.py " + playerA + " " + playerB + " "
                     + width + " " + height + " " + winLength);
@@ -79,9 +77,9 @@ public class PlayerTest {
         }
     }
 
-    private Thread startPlayer(String playerName, Integer width, Integer height, Integer winLength, Double timeout, Algorithm algorithm) {
+    private Thread startPlayer(String playerName, Integer width, Integer height, Integer winLength, Double timeout) {
         Thread thread = new Thread(() -> {
-            Result result = new Player(new GameCommunication(playerName), new Board(width, height), winLength, timeout, algorithm).play();
+            Result result = new Player(new GameCommunication(playerName), new Board(width, height), winLength, timeout, new Algorithm()).play();
             Debug.print(result);
             if (playerName.equals(playerA))
                 resultA = result;

@@ -48,7 +48,7 @@ public class AlgorithmTest {
         Move move = new Move(OPPONENT, 0, 2);
 
         Double evaluation = algorithm.evaluateMove(new Move(OPPONENT, 0, 2), board, 3, TIME_LIMIT);
-        assertEquals(LOSS_VALUE, evaluation, 0.0);
+        assertEquals(LOSS_VALUE, evaluation);
         assertEquals(move, algorithm.chooseMove(OPPONENT, board, 3, TIME_LIMIT));
     }
 
@@ -62,7 +62,7 @@ public class AlgorithmTest {
                 .withMove(new Move(FRIENDLY, 1, 0));
         Move move = new Move(FRIENDLY, 2, 0);
 
-        assertEquals(WIN_VALUE, algorithm.evaluateMove(move, board, 3, TIME_LIMIT), 0.0);
+        assertEquals(WIN_VALUE, algorithm.evaluateMove(move, board, 3, TIME_LIMIT));
     }
 
     @Test
@@ -76,7 +76,7 @@ public class AlgorithmTest {
                 .withMove(new Move(OPPONENT, 1, 0));
         Move move = new Move(FRIENDLY, 2, 1);
 
-        assertEquals(LOSS_VALUE, algorithm.evaluateMove(move, board, 3, TIME_LIMIT), 0.0);
+        assertEquals(LOSS_VALUE, algorithm.evaluateMove(move, board, 3, TIME_LIMIT));
     }
 
     @Test
@@ -92,7 +92,7 @@ public class AlgorithmTest {
 
         Move move = new Move(FRIENDLY, 1, 0);
 
-        assertEquals(LOSS_VALUE, algorithm.evaluateMove(move, board, 3, TIME_LIMIT), 0.0);
+        assertEquals(LOSS_VALUE, algorithm.evaluateMove(move, board, 3, TIME_LIMIT));
     }
 
     @Test
@@ -127,7 +127,7 @@ public class AlgorithmTest {
         Move move = new Move(FRIENDLY, 0, 2);
 
 
-        assertEquals(LOSS_VALUE, algorithm.evaluateMove(move, board, 3, TIME_LIMIT), 0.0);
+        assertEquals(LOSS_VALUE, algorithm.evaluateMove(move, board, 3, TIME_LIMIT));
     }
 
     @Test
@@ -146,7 +146,7 @@ public class AlgorithmTest {
         Move move = new Move(OPPONENT, 0, 2);
 
 
-        assertEquals(WIN_VALUE, algorithm.evaluateMove(move, board, 3, TIME_LIMIT), 0.0);
+        assertEquals(WIN_VALUE, algorithm.evaluateMove(move, board, 3, TIME_LIMIT));
     }
 
     @Test
@@ -163,7 +163,7 @@ public class AlgorithmTest {
                 .withMove(new Move(OPPONENT, 1, 0));
         Move move = new Move(FRIENDLY, 0, 2);
 
-        assertEquals(LOSS_VALUE, algorithm.evaluateMove(move, board, 3, TIME_LIMIT), 0.0);
+        assertEquals(LOSS_VALUE, algorithm.evaluateMove(move, board, 3, TIME_LIMIT));
     }
 
     // 4 x 4
@@ -180,7 +180,7 @@ public class AlgorithmTest {
                 .withMove(new Move(FRIENDLY, 2, 0));
         Move move = new Move(FRIENDLY, 3, 0);
 
-        assertEquals(WIN_VALUE, algorithm.evaluateMove(move, board, 4, TIME_LIMIT), 0.0);
+        assertEquals(WIN_VALUE, algorithm.evaluateMove(move, board, 4, TIME_LIMIT));
     }
 
     @Test
@@ -195,7 +195,7 @@ public class AlgorithmTest {
                 .withMove(new Move(FRIENDLY, 2, 0));
         Move move = new Move(OPPONENT, 3, 0);
 
-        assertEquals(WIN_VALUE, algorithm.evaluateMove(move, board, 4, TIME_LIMIT), 0.0);
+        assertEquals(WIN_VALUE, algorithm.evaluateMove(move, board, 4, TIME_LIMIT));
     }
 
     @Test
@@ -207,17 +207,17 @@ public class AlgorithmTest {
         Board board = new Board(4, 4);
         Move move = new Move(FRIENDLY, 0, 0);
 
-        assertEquals(DRAW_VALUE, algorithm.evaluateMove(move, board, 4, TIME_LIMIT), 0.0);
+        assertEquals(DRAW_VALUE, algorithm.evaluateMove(move, board, 4, TIME_LIMIT));
     }
 
     // time limit
 
     @Test
     public void chooseMoveInTimeLimit() {
-        Board board = new Board(4, 4);
+        Board board = new Board(15, 15);
 
         Long startTime = System.nanoTime();
-        algorithm.chooseMove(FRIENDLY, board, 4, TIME_LIMIT);
+        algorithm.chooseMove(FRIENDLY, board, 5, TIME_LIMIT);
         Long duration = System.nanoTime() - startTime;
 
         assertTrue("expected: " + TIME_LIMIT + " actual: " + duration,duration < TIME_LIMIT);
@@ -225,12 +225,11 @@ public class AlgorithmTest {
 
     @Test
     public void evaluateMoveInTimeLimit() {
-        Debug.print = true;
-        Board board = new Board(15, 15);
+        Board board = new Board(1, 1);
         Move move = new Move(FRIENDLY, 0, 0);
 
         Long startTime = System.nanoTime();
-        algorithm.evaluateMove(move, board, 5, TIME_LIMIT);
+        algorithm.evaluateMove(move, board, 1, TIME_LIMIT);
         Long duration = System.nanoTime() - startTime;
 
         assertTrue("expected: " + TIME_LIMIT + " actual: " + duration,duration < TIME_LIMIT);
@@ -239,7 +238,7 @@ public class AlgorithmTest {
     @Test
     public void time10() {
         for (int i = 0; i < 10; i++) {
-            evaluateMoveInTimeLimit();
+            chooseMoveInTimeLimit();
         }
     }
 

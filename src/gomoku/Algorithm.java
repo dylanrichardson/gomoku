@@ -1,6 +1,7 @@
 package gomoku;
 
 import java.util.List;
+import java.util.concurrent.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -17,6 +18,7 @@ class Algorithm {
 
     private static final RuntimeException NO_MOVES_LEFT = new RuntimeException("No moves left to make");
     private static final Double MIN_TIME_LIMIT = 50000.0; // ns
+    private static final ExecutorService threadPool = Executors.newCachedThreadPool();
 
     Move chooseMove(Stone stone, Board board, Integer winLength, Double timeLimit) {
         long startTime = System.nanoTime();
@@ -69,7 +71,8 @@ class Algorithm {
     }
 
     private Double getTimeLeft(Long startTime, Double timeLeft) {
-        return timeLeft - (System.nanoTime() - startTime);
+        // underestimate
+        return 0.99 * (timeLeft - (System.nanoTime() - startTime));
     }
 
     private Stream<Move> getPossibleMoves(Stone stone, Board board) {
@@ -80,11 +83,11 @@ class Algorithm {
     }
 
     private Double getMinValue(Board board, String tab, Integer winLength, Double timeLimit) {
-        return getExtremeValue(FRIENDLY, board, this::getMaxValue, tab + "   ", winLength, timeLimit);
+        return getExtremeValue(OPPONENT, board, this::getMaxValue, tab + "   ", winLength, timeLimit);
     }
 
     private Double getMaxValue(Board board, String tab, Integer winLength, Double timeLimit) {
-        return getExtremeValue(OPPONENT, board, this::getMinValue, tab + "   ", winLength, timeLimit);
+        return getExtremeValue(FRIENDLY, board, this::getMinValue, tab + "   ", winLength, timeLimit);
     }
 
     private Double getExtremeValue(
@@ -99,17 +102,16 @@ class Algorithm {
         Supplier<Double> timeLeft = () -> getTimeLeft(startTime, timeLimit);
 
         // check if terminal or out of time
-        Double boardValue = board.getValue(winLength, timeLeft.get(), this::getHeuristic);
+        Double boardValue = getBoardValue(board, winLength, timeLeft.get());
+        Debug.print(boardValue);
         if (boardValue != null) {
             return boardValue;
         }
 
-        Debug.debug(tab + stone.toString());
-
-        Integer mod = (stone == OPPONENT) ? 1 : -1;
+        Integer mod = (stone == FRIENDLY) ? 1 : -1;
         Double extremeScore = LOSS_VALUE * mod;
         Move extremeMove = null;
-        List<Move> moves = getPossibleMoves(stone.getOpponent(), board).collect(Collectors.toList());
+        List<Move> moves = getPossibleMoves(stone, board).collect(Collectors.toList());
 
         for (int i = 0; i < moves.size(); i++) {
             Debug.debug(tab + moves.get(i));
@@ -118,6 +120,7 @@ class Algorithm {
                 return getHeuristic(board);
 
             Double score = mod * getNextExtremeValue.apply(board.withMove(moves.get(i)), tab, winLength, newTimeLimit);
+            Debug.debug(tab + score);
             if (score >= extremeScore * mod) {
                 extremeScore = score;
                 extremeMove = moves.get(i);
@@ -129,8 +132,22 @@ class Algorithm {
 
         if (extremeMove == null)
             throw NO_MOVES_LEFT;
-        Debug.debug(tab + " score: " + extremeScore);
+        Debug.debug(tab + "score: " + extremeScore);
         return extremeScore * mod;
+    }
+
+    private Double getBoardValue(Board board, Integer winLength, Double timeLimit) {
+        Double extremeValue;
+        Future<Double> future = threadPool.submit(() -> board.getValue(winLength));
+        try {
+            extremeValue = future.get(timeLimit.longValue(), TimeUnit.NANOSECONDS);
+        } catch (TimeoutException | InterruptedException | ExecutionException e) {
+            Debug.debug("Out of time");
+            extremeValue = getHeuristic(board);
+        } finally {
+            future.cancel(true);
+        }
+        return extremeValue;
     }
 
     @FunctionalInterface
