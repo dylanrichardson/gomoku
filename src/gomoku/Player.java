@@ -27,7 +27,7 @@ class Player {
     }
 
     Player(String playerName, Integer width, Integer height, Integer winLength) {
-        this(playerName, width, height, winLength, TIME_LIMIT, new AlgorithmImpl());
+        this(playerName, width, height, winLength, TIME_LIMIT, new Algorithm());
     }
 
     private Player(String playerName, Integer width, Integer height, Integer winLength, Double timeLimit, Algorithm algorithm) {

@@ -2,15 +2,18 @@ package gomoku;
 
 import org.junit.Test;
 
-import static gomoku.Algorithm.*;
-import static gomoku.Player.TIME_LIMIT;
+import static gomoku.Algorithm.DRAW_VALUE;
+import static gomoku.Algorithm.LOSS_VALUE;
+import static gomoku.Algorithm.WIN_VALUE;
 import static gomoku.Stone.FRIENDLY;
 import static gomoku.Stone.OPPONENT;
 import static org.junit.Assert.*;
 
-public class AlgorithmImplTest {
+public class AlgorithmTest {
 
-    private final Algorithm algorithm = new AlgorithmImpl();
+    private static final Double TIME_LIMIT = 1.0 * 1000000000; // 1 sec
+
+    private final Algorithm algorithm = new Algorithm();
 
     // 3 x 3
 
@@ -211,28 +214,33 @@ public class AlgorithmImplTest {
 
     @Test
     public void chooseMoveInTimeLimit() {
-        //    |   |   |
-        //    |   |   |
-        //    |   |   |
-        //    |   |   |
         Board board = new Board(4, 4);
+
         Long startTime = System.nanoTime();
         algorithm.chooseMove(FRIENDLY, board, 4, TIME_LIMIT);
         Long duration = System.nanoTime() - startTime;
+
         assertTrue("expected: " + TIME_LIMIT + " actual: " + duration,duration < TIME_LIMIT);
     }
 
     @Test
     public void evaluateMoveInTimeLimit() {
-        //    |   |   |
-        //    |   |   |
-        //    |   |   |
-        //    |   |   |
-        Board board = new Board(4, 4);
+        Debug.print = true;
+        Board board = new Board(15, 15);
+        Move move = new Move(FRIENDLY, 0, 0);
+
         Long startTime = System.nanoTime();
-        algorithm.evaluateMove(new Move(FRIENDLY, 0, 0), board, 4, TIME_LIMIT);
+        algorithm.evaluateMove(move, board, 5, TIME_LIMIT);
         Long duration = System.nanoTime() - startTime;
+
         assertTrue("expected: " + TIME_LIMIT + " actual: " + duration,duration < TIME_LIMIT);
+    }
+
+    @Test
+    public void time10() {
+        for (int i = 0; i < 10; i++) {
+            evaluateMoveInTimeLimit();
+        }
     }
 
 }

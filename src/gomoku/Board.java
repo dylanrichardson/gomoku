@@ -188,17 +188,24 @@ class Board {
         return false;
     }
 
-    Boolean isBlockingMove(Move move, Integer winLength) {
+    Boolean isBlockingWin(Move move, Integer winLength) {
         // would be loss if opponent moved there
         Move oppMove = new Move(move.getStone().getOpponent(), move.getColumn(), move.getRow());
         return isTerminalMove(oppMove, winLength);
     }
 
-    Double getValue(Integer winLength, Long timeLimit) {
+    /**
+     * win - terminal
+     * loss - terminal
+     * draw - terminal
+     * heuristic - out of time
+     * null - not terminal and not out of time
+     */
+    Double getValue(Integer winLength, Double timeLimit, Function<Board, Double> heuristic) {
         Double value = null;
         Future<Boolean> future = threadPool.submit(() -> isTerminal(winLength));
         try {
-            Boolean isTerminal = future.get(timeLimit, TimeUnit.NANOSECONDS);
+            Boolean isTerminal = future.get(timeLimit.longValue(), TimeUnit.NANOSECONDS);
             if (isTerminal) {
                 Stone winner = getWinner(winLength);
                 if (winner == FRIENDLY)
@@ -210,8 +217,7 @@ class Board {
             }
         } catch (TimeoutException ex) {
             Debug.debug("Out of time");
-            // TODO add heuristic
-            value = DRAW_VALUE;
+            value = heuristic.apply(this);
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             value =  DRAW_VALUE;

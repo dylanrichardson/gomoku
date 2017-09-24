@@ -106,10 +106,10 @@ public class GameCommunicationTest {
     public void waitForOpponentMove() throws IOException {
         String playerName = "testPlayerName";
         Path path = Paths.get(playerFile(playerName));
+        tryDelete(path);
+
         long delay = 1000;
         Timer timer = new Timer();
-        tryDelete(path);
-        long startTime = System.nanoTime();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -122,8 +122,11 @@ public class GameCommunicationTest {
                 }
             }
         }, delay);
+
+        long startTime = System.nanoTime();
         new GameCommunication(playerName).waitForTurn();
         long endTime = System.nanoTime();
+
         tryDelete(path);
 
         assertEquals(delay / 100, (endTime - startTime) / 100000000);
