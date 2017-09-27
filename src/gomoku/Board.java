@@ -26,7 +26,8 @@ class Board {
                 .stream(cells)
                 .map(Stone[]::clone)
                 .toArray(Stone[][]::new);
-        newCells[move.getColumn()][move.getRow()] = move.getStone();
+        if (move != null)
+            newCells[move.getColumn()][move.getRow()] = move.getStone();
         return new Board(width, height, newCells);
     }
 

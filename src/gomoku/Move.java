@@ -12,6 +12,7 @@ class Move {
     private final Integer row;
 
     Move(Stone stone, Character column, Integer row) {
+        // TODO change row to start at 1
         this(stone, toLowerCase(column) - INDEX, row);
     }
 

@@ -64,8 +64,7 @@ class Algorithm {
         }
     }
 
-    Double getHeuristic(Board board, Move nextMove) {
-        // TODO nextMove can be null
+    Double getHeuristic(Board board) {
         return DRAW_VALUE;
     }
 
@@ -116,7 +115,7 @@ class Algorithm {
             Double newTimeLimit = timeLeft.get() / (moves.size() - i);
             // check if out of time
             if (newTimeLimit < MIN_TIME_LIMIT)
-                return getHeuristic(board, extremeMove);
+                return getHeuristic(board.withMove(extremeMove));
 
             Move move = moves.get(i);
             // choose first terminal move

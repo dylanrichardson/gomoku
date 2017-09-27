@@ -253,7 +253,7 @@ public class AlgorithmTest {
     public void getHeuristic() {
         // TODO
         Board board = new Board(15, 15);
-        algorithm.getHeuristic(board, null);
+        algorithm.getHeuristic(board);
     }
 
     // getPossibleMoves
