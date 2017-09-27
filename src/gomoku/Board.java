@@ -1,23 +1,15 @@
 package gomoku;
 
 import com.sun.tools.javac.util.Pair;
-
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import static gomoku.Algorithm.*;
 import static gomoku.Stone.FRIENDLY;
 import static gomoku.Stone.OPPONENT;
-import static java.lang.Math.floor;
 
 class Board {
 
     private final Stone[][] cells;
     private final Integer width;
     private final Integer height;
-    private final Map<Integer, Stone> winners = new HashMap<>();
 
     private Board(Integer width, Integer height, Stone[][] cells) {
         this.cells = cells;
@@ -54,104 +46,85 @@ class Board {
         return (column >= 0 && column < width && row >= 0 && row < height) ? cells[column][row] : null;
     }
 
-    Boolean isTerminal(Integer winLength) {
-        Boolean isDraw = true;
-        for (int col = 0; col < width; col++) {
-            for (int row = 0; row < height; row++) {
-                Stone stone = cells[col][row];
-                if (stone == null) {
-                    isDraw = false;
-                } else if (isTerminalCell(col, row, winLength)) {
-                    winners.put(winLength, stone);
-                    return true;
-                }
-            }
-        }
-        winners.put(winLength, null);
-        return isDraw;
-    }
-
-    Stone getWinner(Integer winLength) {
-        if (!winners.containsKey(winLength)) {
-            isTerminal(winLength);
-        }
-        return winners.get(winLength);
-    }
-
-    // true if the cell is the left/top most of a win
-    private Boolean isTerminalCell(Integer col, Integer row, Integer winLength) {
-        return isVerticalWin(col, row, winLength)
-                || isHorizontalWin(col, row, winLength)
-                || isDiagonalWin(col, row, winLength);
-    }
-
-    private Boolean isVerticalWin(Integer col, Integer row, Integer winLength) {
-        return allSame(getVerticalStones(col, row, winLength));
-    }
-
-    private Boolean isHorizontalWin(Integer col, Integer row, Integer winLength) {
-        return allSame(getHorizontalStones(col, row, winLength));
-    }
-
-    private Boolean isDiagonalWin(Integer col, Integer row, Integer winLength) {
-        return allSame(getPositiveDiagonalStones(col, row, winLength))
-                || allSame(getNegativeDiagonalStones(col, row, winLength));
-    }
-
-    private <T> Boolean allSame(Collection<T> cells) {
-        Iterator<T> iter = cells.iterator();
-        T first = iter.next();
-        while (iter.hasNext()) {
-            T next = iter.next();
-            if (next == null || !next.equals(first)) {
-                return false;
-            }
-        }
-        return first != null;
-    }
-
-    private Collection<Stone> getVerticalStones(Integer col, Integer row, Integer length) {
-        return getStones(length, r -> getStoneInCell(col, row + r));
-    }
-
-    private Collection<Stone> getHorizontalStones(Integer col, Integer row, Integer length) {
-        return getStones(length, r -> getStoneInCell(col + r, row));
-    }
-
-    private Collection<Stone> getPositiveDiagonalStones(Integer col, Integer row, Integer length) {
-        return getDiagonalStones(col, row, length, true);
-    }
-
-    private Collection<Stone> getNegativeDiagonalStones(Integer col, Integer row, Integer length) {
-        return getDiagonalStones(col, row, length, false);
-    }
-
-    private Collection<Stone> getDiagonalStones(Integer col, Integer row, Integer length, Boolean positive) {
-        // TODO optimize (return empty if near border)
-        Integer mod = (positive) ? 1 : -1;
-        return getStones(
-                (int) floor(- length / 2.0),
-                (int) floor(length / 2.0),
-                r -> getStoneInCell(col + r, row + mod * r));
-    }
-
-    private Collection<Stone> getStones(Integer start, Integer end, Function<Integer, Stone> getStone) {
-        return IntStream
-                .range(start, end)
-                .mapToObj(getStone::apply)
-                .collect(Collectors.toList());
-    }
-
-    private Collection<Stone> getStones(Integer length, Function<Integer, Stone> getStone) {
-        return getStones(0, length, getStone);
-    }
-
     Boolean isValidMove(Move move) {
         return move != null
                 && move.getColumn() < width
                 && move.getColumn() >= 0
                 && move.getRow() < height
                 && move.getRow() >= 0;
+    }
+
+    Boolean isDraw() {
+        return getOpenCells().isEmpty();
+    }
+
+    Boolean willBeTerminalCell(Integer col, Integer row, Integer winLength) {
+        return getNumInARowHorizontal(col, row, winLength) >= winLength - 1
+                || getNumInARowVertical(col, row, winLength) >= winLength - 1
+                || getNumInARowPositiveDiagonal(col, row, winLength) >= winLength - 1
+                || getNumInARowNegativeDiagonal(col, row, winLength) >= winLength - 1;
+    }
+
+    private Integer getNumInARowNegativeDiagonal(Integer col, Integer row, Integer winLength) {
+        return getNumInARowNorthWest(col, row, winLength) + getNumInARowSouthEast(col, row, winLength);
+    }
+
+    private Integer getNumInARowSouthEast(Integer col, Integer row, Integer winLength) {
+        return getNumInARow(col, row, winLength, 1, 1);
+    }
+
+    private Integer getNumInARowNorthWest(Integer col, Integer row, Integer winLength) {
+        return getNumInARow(col, row, winLength, -1, -1);
+    }
+
+    private Integer getNumInARowPositiveDiagonal(Integer col, Integer row, Integer winLength) {
+        return getNumInARowNorthEast(col, row, winLength) + getNumInARowSouthWest(col, row, winLength);
+    }
+
+    private Integer getNumInARowSouthWest(Integer col, Integer row, Integer winLength) {
+        return getNumInARow(col, row, winLength, -1, 1);
+    }
+
+    private Integer getNumInARowNorthEast(Integer col, Integer row, Integer winLength) {
+        return getNumInARow(col, row, winLength, 1, -1);
+    }
+
+    private Integer getNumInARowVertical(Integer col, Integer row, Integer winLength) {
+        return getNumInARowNorth(col, row, winLength) + getNumInARowSouth(col, row, winLength);
+    }
+
+    private Integer getNumInARowNorth(Integer col, Integer row, Integer winLength) {
+        return getNumInARow(col, row, winLength, 0, -1);
+    }
+
+    private Integer getNumInARowSouth(Integer col, Integer row, Integer winLength) {
+        return getNumInARow(col, row, winLength, 0, 1);
+    }
+
+    private Integer getNumInARowHorizontal(Integer col, Integer row, Integer winLength) {
+        return getNumInARowWest(col, row, winLength) + getNumInARowEast(col, row, winLength);
+    }
+
+    private Integer getNumInARowEast(Integer col, Integer row, Integer winLength) {
+        return getNumInARow(col, row, winLength, 1, 0);
+    }
+
+    private Integer getNumInARowWest(Integer col, Integer row, Integer winLength) {
+        return getNumInARow(col, row, winLength, -1, 0);
+    }
+
+    private Integer getNumInARow(Integer col, Integer row, Integer winLength, Integer dCol, Integer dRow) {
+        Stone stone = getStoneInCell(col + dCol, row + dRow);
+        if (stone == null)
+            return 0;
+        int numInARow = 2;
+        for (; numInARow < winLength; numInARow++) {
+            if (getStoneInCell(col + dCol * numInARow, row + dRow * numInARow) != stone) {
+                numInARow--;
+                break;
+            }
+        }
+        return numInARow;
     }
 
     @Override
@@ -177,27 +150,5 @@ class Board {
             return "O";
         return " ";
     }
-
-    Boolean isTerminalMove(Move move, Integer winLength) {
-        // TODO
-        return false;
-    }
-
-    Boolean isBlockingWin(Move move, Integer winLength) {
-        // would be loss if opponent moved there
-        Move oppMove = new Move(move.getStone().getOpponent(), move.getColumn(), move.getRow());
-        return isTerminalMove(oppMove, winLength);
-    }
-
-    Double getValue(Integer winLength) {
-        if (isTerminal(winLength)) {
-            Stone winner = getWinner(winLength);
-            if (winner == FRIENDLY)
-                return WIN_VALUE;
-            if (winner == OPPONENT)
-                return LOSS_VALUE;
-            return DRAW_VALUE;
-        }
-        return null;
-    }
 }
+

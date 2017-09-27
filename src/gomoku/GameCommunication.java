@@ -57,8 +57,7 @@ class GameCommunication {
         try {
             Debug.print("\n\n" + playerName + " made move " + move + "\n\n");
             Files.write(Paths.get(MOVE_FILE), singleton(playerName + " " + move.getCell()));
-            Thread.sleep(1000); // TODO remove this line
-//            Files.delete(Paths.get(playerFile(playerName)));
+            Thread.sleep(1000);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }

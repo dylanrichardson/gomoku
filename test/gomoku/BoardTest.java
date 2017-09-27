@@ -12,6 +12,9 @@ import static gomoku.Stone.OPPONENT;
 import static org.junit.Assert.*;
 
 public class BoardTest {
+
+    // withMove
+
     @Test
     public void withMove3x3() {
         Board board = new Board(3, 3)
@@ -34,6 +37,8 @@ public class BoardTest {
         assertEquals(OPPONENT, board.getStoneInCell(0, 0));
     }
 
+    // getOpenCells
+
     @Test
     public void getOpenCells3x3() {
         Board board = new Board(3, 3)
@@ -50,122 +55,7 @@ public class BoardTest {
         assertEquals(openCells, board.getOpenCells());
     }
 
-    @Test
-    public void isTerminalVerticalWin3x3() {
-        Board board = new Board(3, 3)
-                .withMove(new Move(FRIENDLY, 0, 0))
-                .withMove(new Move(FRIENDLY, 0, 1))
-                .withMove(new Move(FRIENDLY, 0, 2));
-        assertEquals(FRIENDLY, board.getWinner(3));
-    }
-
-    @Test
-    public void isTerminalHorizontalWin3x3() {
-        Board board = new Board(3, 3)
-                .withMove(new Move(FRIENDLY, 0, 0))
-                .withMove(new Move(FRIENDLY, 1, 0))
-                .withMove(new Move(FRIENDLY, 2, 0));
-        assertEquals(FRIENDLY, board.getWinner(3));
-    }
-
-    @Test
-    public void isTerminalDiagonalWin13x3() {
-        Board board = new Board(3, 3)
-                .withMove(new Move(FRIENDLY, 0, 0))
-                .withMove(new Move(FRIENDLY, 1, 1))
-                .withMove(new Move(FRIENDLY, 2, 2));
-        assertEquals(FRIENDLY, board.getWinner(3));
-    }
-
-    @Test
-    public void isTerminalDiagonalWin23x3() {
-        Board board = new Board(3, 3)
-                .withMove(new Move(FRIENDLY, 2, 0))
-                .withMove(new Move(FRIENDLY, 1, 1))
-                .withMove(new Move(FRIENDLY, 0, 2));
-        assertEquals(FRIENDLY, board.getWinner(3));
-    }
-
-    @Test
-    public void isTerminalDraw3x3() {
-        //  F | O | F
-        //  F | O | F
-        //  O | F | O
-        Board board = new Board(3, 3)
-                .withMove(new Move(FRIENDLY, 0, 0))
-                .withMove(new Move(FRIENDLY, 0, 1))
-                .withMove(new Move(OPPONENT, 0, 2))
-                .withMove(new Move(OPPONENT, 1, 0))
-                .withMove(new Move(OPPONENT, 1, 1))
-                .withMove(new Move(FRIENDLY, 1, 2))
-                .withMove(new Move(FRIENDLY, 2, 0))
-                .withMove(new Move(FRIENDLY, 2, 1))
-                .withMove(new Move(OPPONENT, 2, 2));
-        assertTrue(board.isTerminal(3));
-        assertNull(board.getWinner(3));
-    }
-
-    @Test
-    public void isTerminalDraw4x4() {
-        //  F | F | F | O
-        //  F | O | F | O
-        //  O | F | O | F
-        //  F | O | F | O
-        Board board = new Board(4, 4)
-                .withMove(new Move(FRIENDLY, 0, 0))
-                .withMove(new Move(FRIENDLY, 0, 1))
-                .withMove(new Move(OPPONENT, 0, 2))
-                .withMove(new Move(FRIENDLY, 0, 3))
-                .withMove(new Move(FRIENDLY, 1, 0))
-                .withMove(new Move(OPPONENT, 1, 1))
-                .withMove(new Move(FRIENDLY, 1, 2))
-                .withMove(new Move(OPPONENT, 1, 3))
-                .withMove(new Move(FRIENDLY, 2, 0))
-                .withMove(new Move(FRIENDLY, 2, 1))
-                .withMove(new Move(OPPONENT, 2, 2))
-                .withMove(new Move(FRIENDLY, 2, 3))
-                .withMove(new Move(OPPONENT, 3, 0))
-                .withMove(new Move(OPPONENT, 3, 1))
-                .withMove(new Move(FRIENDLY, 3, 2))
-                .withMove(new Move(OPPONENT, 3, 3));
-        assertTrue(board.isTerminal(4));
-        assertNull(board.getWinner(4));
-    }
-
-    @Test
-    public void isTerminalFalse3x3() {
-        assertNull(new Board(3,3).getWinner(3));
-    }
-
-    @Test
-    public void getWinnerFriendly3x3() {
-
-        Board board = new Board(3, 3)
-                .withMove(new Move(FRIENDLY, 0, 0))
-                .withMove(new Move(FRIENDLY, 0, 1))
-                .withMove(new Move(FRIENDLY, 0, 2));
-        assertEquals(FRIENDLY, board.getWinner(3));
-    }
-
-    @Test
-    public void getWinnerOpponent3x3() {
-
-        Board board = new Board(3, 3)
-                .withMove(new Move(OPPONENT, 0, 0))
-                .withMove(new Move(OPPONENT, 0, 1))
-                .withMove(new Move(OPPONENT, 0, 2));
-        assertEquals(OPPONENT, board.getWinner(3));
-    }
-
-    @Test
-    public void getWinnerDraw3x3() {
-
-        Board board = new Board(3, 3)
-                .withMove(new Move(OPPONENT, 0, 0))
-                .withMove(new Move(OPPONENT, 0, 1))
-                .withMove(new Move(FRIENDLY, 0, 2));
-        assertEquals(null, board.getWinner(3));
-    }
+    // isValidMove
 
     @Test
     public void isValidMoveTrue3x3() {
@@ -188,6 +78,8 @@ public class BoardTest {
         assertFalse(board.isValidMove(move));
     }
 
+    // toString
+
     @Test
     public void print3x3() {
         String boardString = " F | F | O \n"
@@ -201,25 +93,222 @@ public class BoardTest {
         assertEquals(boardString, board.toString());
     }
 
-    // TODO add tests for isTerminalMove/isTerminal on 4x4 3 win length
+    // willBeTerminalCell
 
     @Test
-    public void getValueDraw() {
-        // F | O | F
-        // F | O | O
-        // O | F | F
-        Board board = new Board(3, 3)
+    public void willBeTerminalCellWin4West() {
+        // F | F | F | F |(F)| ...
+        //   |   |   |   |   | ...
+        // ...
+        Board board = new Board(15, 15)
+                .withMove(new Move(FRIENDLY, 0, 0))
+                .withMove(new Move(FRIENDLY, 1, 0))
+                .withMove(new Move(FRIENDLY, 2, 0))
+                .withMove(new Move(FRIENDLY, 3, 0));
+
+        assertTrue(board.willBeTerminalCell(4, 0, 5));
+    }
+
+    @Test
+    public void willBeTerminalCellWin4East() {
+        //(F)| F | F | F | F | ...
+        //   |   |   |   |   | ...
+        // ...
+        Board board = new Board(15, 15)
+                .withMove(new Move(FRIENDLY, 1, 0))
+                .withMove(new Move(FRIENDLY, 2, 0))
+                .withMove(new Move(FRIENDLY, 3, 0))
+                .withMove(new Move(FRIENDLY, 4, 0));
+
+        assertTrue(board.willBeTerminalCell(0, 0, 5));
+    }
+
+    @Test
+    public void willBeTerminalCellWin3West1East() {
+        // F | F | F |(F)| F | ...
+        //   |   |   |   |   | ...
+        // ...
+        Board board = new Board(15, 15)
+                .withMove(new Move(FRIENDLY, 0, 0))
+                .withMove(new Move(FRIENDLY, 1, 0))
+                .withMove(new Move(FRIENDLY, 2, 0))
+                .withMove(new Move(FRIENDLY, 4, 0));
+
+        assertTrue(board.willBeTerminalCell(3, 0, 5));
+    }
+
+    @Test
+    public void willBeTerminalCellWin2West2East() {
+        // F | F |(F)| F | F | ...
+        //   |   |   |   |   | ...
+        // ...
+        Board board = new Board(15, 15)
+                .withMove(new Move(FRIENDLY, 0, 0))
+                .withMove(new Move(FRIENDLY, 1, 0))
+                .withMove(new Move(FRIENDLY, 3, 0))
+                .withMove(new Move(FRIENDLY, 4, 0));
+
+        assertTrue(board.willBeTerminalCell(2, 0, 5));
+    }
+
+    @Test
+    public void willBeTerminalCellWin4North() {
+        // F |   | ...
+        // F |   | ...
+        // F |   | ...
+        // F |   | ...
+        //(F)|   | ...
+        // ...
+        Board board = new Board(15, 15)
                 .withMove(new Move(FRIENDLY, 0, 0))
                 .withMove(new Move(FRIENDLY, 0, 1))
-                .withMove(new Move(OPPONENT, 0, 2))
-                .withMove(new Move(OPPONENT, 1, 0))
-                .withMove(new Move(OPPONENT, 1, 1))
-                .withMove(new Move(FRIENDLY, 1, 2))
-                .withMove(new Move(FRIENDLY, 2, 0))
-                .withMove(new Move(OPPONENT, 2, 1))
-                .withMove(new Move(FRIENDLY, 2, 2));
+                .withMove(new Move(FRIENDLY, 0, 2))
+                .withMove(new Move(FRIENDLY, 0, 3));
 
-        assertEquals(DRAW_VALUE, board.getValue(3));
+        assertTrue(board.willBeTerminalCell(0, 4, 5));
+    }
+
+    @Test
+    public void willBeTerminalCellWin4South() {
+        //(F)|   | ...
+        // F |   | ...
+        // F |   | ...
+        // F |   | ...
+        // F |   | ...
+        // ...
+        Board board = new Board(15, 15)
+                .withMove(new Move(FRIENDLY, 0, 1))
+                .withMove(new Move(FRIENDLY, 0, 2))
+                .withMove(new Move(FRIENDLY, 0, 3))
+                .withMove(new Move(FRIENDLY, 0, 4));
+
+        assertTrue(board.willBeTerminalCell(0, 0, 5));
+    }
+
+    @Test
+    public void willBeTerminalCellWin2North2South() {
+        // F |   | ...
+        // F |   | ...
+        //(F)|   | ...
+        // F |   | ...
+        // F |   | ...
+        // ...
+        Board board = new Board(15, 15)
+                .withMove(new Move(FRIENDLY, 0, 0))
+                .withMove(new Move(FRIENDLY, 0, 1))
+                .withMove(new Move(FRIENDLY, 0, 3))
+                .withMove(new Move(FRIENDLY, 0, 4));
+
+        assertTrue(board.willBeTerminalCell(0, 2, 5));
+    }
+
+    @Test
+    public void willBeTerminalCellWin4NorthEast() {
+        //   |   |   |   | F | ...
+        //   |   |   | F |   |   ...
+        //   |   | F |   |   |   ...
+        //   | F |   |   |   |   ...
+        //(F)|   |   |   |   |   ...
+        Board board = new Board(15, 15)
+                .withMove(new Move(FRIENDLY, 4, 0))
+                .withMove(new Move(FRIENDLY, 3, 1))
+                .withMove(new Move(FRIENDLY, 2, 2))
+                .withMove(new Move(FRIENDLY, 1, 3));
+
+        assertTrue(board.willBeTerminalCell(0, 4, 5));
+    }
+
+    @Test
+    public void willBeTerminalCellWin4SouthWest() {
+        //   |   |   |   |(F)| ...
+        //   |   |   | F |   |   ...
+        //   |   | F |   |   |   ...
+        //   | F |   |   |   |   ...
+        // F |   |   |   |   |   ...
+        Board board = new Board(15, 15)
+                .withMove(new Move(FRIENDLY, 3, 1))
+                .withMove(new Move(FRIENDLY, 2, 2))
+                .withMove(new Move(FRIENDLY, 1, 3))
+                .withMove(new Move(FRIENDLY, 0, 4));
+
+        assertTrue(board.willBeTerminalCell(4, 0, 5));
+    }
+
+    @Test
+    public void willBeTerminalCellWin2NorthEast2SouthWest() {
+        //   |   |   |   | F | ...
+        //   |   |   | F |   |   ...
+        //   |   |(F)|   |   |   ...
+        //   | F |   |   |   |   ...
+        // F |   |   |   |   |   ...
+        Board board = new Board(15, 15)
+                .withMove(new Move(FRIENDLY, 4, 0))
+                .withMove(new Move(FRIENDLY, 3, 1))
+                .withMove(new Move(FRIENDLY, 1, 3))
+                .withMove(new Move(FRIENDLY, 0, 4));
+
+        assertTrue(board.willBeTerminalCell(2, 2, 5));
+    }
+
+    @Test
+    public void willBeTerminalCellWin4NorthWest() {
+        // F |   |   |   |   | ...
+        //   | F |   |   |   |   ...
+        //   |   | F |   |   |   ...
+        //   |   |   | F |   |   ...
+        //   |   |   |   |(F)|   ...
+        Board board = new Board(15, 15)
+                .withMove(new Move(FRIENDLY, 0, 0))
+                .withMove(new Move(FRIENDLY, 1, 1))
+                .withMove(new Move(FRIENDLY, 2, 2))
+                .withMove(new Move(FRIENDLY, 3, 3));
+
+        assertTrue(board.willBeTerminalCell(4, 4, 5));
+    }
+
+    @Test
+    public void willBeTerminalCellWin4SouthEast() {
+        //(F)|   |   |   |   | ...
+        //   | F |   |   |   |   ...
+        //   |   | F |   |   |   ...
+        //   |   |   | F |   |   ...
+        //   |   |   |   | F |   ...
+        Board board = new Board(15, 15)
+                .withMove(new Move(FRIENDLY, 1, 1))
+                .withMove(new Move(FRIENDLY, 2, 2))
+                .withMove(new Move(FRIENDLY, 3, 3))
+                .withMove(new Move(FRIENDLY, 4, 4));
+
+        assertTrue(board.willBeTerminalCell(0, 0, 5));
+    }
+
+    @Test
+    public void willBeTerminalCellWinOpponent() {
+        //(F)|   |   |   |   | ...
+        //   | O |   |   |   |   ...
+        //   |   | O |   |   |   ...
+        //   |   |   | O |   |   ...
+        //   |   |   |   | O |   ...
+        Board board = new Board(15, 15)
+                .withMove(new Move(OPPONENT, 1, 1))
+                .withMove(new Move(OPPONENT, 2, 2))
+                .withMove(new Move(OPPONENT, 3, 3))
+                .withMove(new Move(OPPONENT, 4, 4));
+
+        assertTrue(board.willBeTerminalCell(0, 0, 5));
+    }
+
+    @Test
+    public void willBeTerminalCellFalse() {
+        // F | F | F |(F)| ...
+        //   |   |   |   | ...
+        // ...
+        Board board = new Board(15, 15)
+                .withMove(new Move(FRIENDLY, 0, 0))
+                .withMove(new Move(FRIENDLY, 1, 0))
+                .withMove(new Move(FRIENDLY, 2, 0));
+
+        assertFalse(board.willBeTerminalCell(3, 0, 5));
     }
 
 }

@@ -41,6 +41,7 @@ public class PlayerTest {
 //
 //    @Test
 //    public void play15x15() {
+//        Debug.print = true;
 //        play(15, 15, 5);
 //
 //        assertNull(exception);
@@ -59,7 +60,7 @@ public class PlayerTest {
     private void refGame(Integer width, Integer height, Integer winLength) {
         try {
             Thread threadA = startPlayer(playerA, width, height, winLength, TIME_LIMIT);
-            Thread threadB = startPlayer(playerB, width, height, winLength, TIME_LIMIT * 1000000000);
+            Thread threadB = startPlayer(playerB, width, height, winLength, TIME_LIMIT);
 
             Process p = Runtime.getRuntime().exec("python test/referee.py " + playerA + " " + playerB + " "
                     + width + " " + height + " " + winLength);

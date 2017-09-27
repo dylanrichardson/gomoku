@@ -6,7 +6,7 @@ import static gomoku.Stone.FRIENDLY;
 
 class Player {
 
-    static final Double TIME_LIMIT = 10.0 * 1000000000; // ten seconds
+    static final Double TIME_LIMIT = 9.0 * 1000000000; // 9 seconds
 
     private final GameCommunication gameCommunication;
     private final List<Move> moves;

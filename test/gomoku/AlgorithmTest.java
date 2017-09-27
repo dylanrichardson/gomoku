@@ -193,13 +193,25 @@ public class AlgorithmTest {
                 .withMove(new Move(FRIENDLY, 0, 0))
                 .withMove(new Move(FRIENDLY, 1, 0))
                 .withMove(new Move(FRIENDLY, 2, 0));
-        Move move = new Move(OPPONENT, 3, 0);
+        Move move = new Move(OPPONENT, 3, 1);
 
-        assertEquals(WIN_VALUE, algorithm.evaluateMove(move, board, 4, TIME_LIMIT));
+        assertEquals(WIN_VALUE, algorithm.evaluateMove(move, board, 4, TIME_LIMIT * 5));
     }
 
     @Test
     public void evaluateMoveDraw4x4() {
+        // (F)|   |   |
+        //    |   |   |
+        //    |   |   |
+        //    |   |   |
+        Board board = new Board(4, 4);
+        Move move = new Move(FRIENDLY, 0, 0);
+
+        assertEquals(DRAW_VALUE, algorithm.evaluateMove(move, board, 4, TIME_LIMIT));
+    }
+
+    @Test
+    public void chooseMoveBlock15x15() {
         // (F)|   |   |
         //    |   |   |
         //    |   |   |
@@ -225,21 +237,32 @@ public class AlgorithmTest {
 
     @Test
     public void evaluateMoveInTimeLimit() {
-        Board board = new Board(1, 1);
+        Board board = new Board(15, 15);
         Move move = new Move(FRIENDLY, 0, 0);
 
         Long startTime = System.nanoTime();
-        algorithm.evaluateMove(move, board, 1, TIME_LIMIT);
+        algorithm.evaluateMove(move, board, 5, TIME_LIMIT);
         Long duration = System.nanoTime() - startTime;
 
         assertTrue("expected: " + TIME_LIMIT + " actual: " + duration,duration < TIME_LIMIT);
     }
 
+    // getHeuristic
+
     @Test
-    public void time10() {
-        for (int i = 0; i < 10; i++) {
-            chooseMoveInTimeLimit();
-        }
+    public void getHeuristic() {
+        // TODO
+        Board board = new Board(15, 15);
+        algorithm.getHeuristic(board, null);
+    }
+
+    // getPossibleMoves
+
+    @Test
+    public void getPossibleMoves() {
+        // TODO
+        Board board = new Board(15, 15);
+        algorithm.getPossibleMoves(FRIENDLY, board);
     }
 
 }
