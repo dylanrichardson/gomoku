@@ -4,8 +4,13 @@ import com.sun.tools.javac.util.Pair;
 import java.util.*;
 import static gomoku.Stone.FRIENDLY;
 import static gomoku.Stone.OPPONENT;
+import static java.lang.Character.toLowerCase;
+import static java.lang.Character.toUpperCase;
 
 class Board {
+
+    static final Character COL_INDEX = 'a';
+    private static final int ROW_INDEX = 1;
 
     private final Stone[][] cells;
     private final Integer width;
@@ -15,6 +20,22 @@ class Board {
         this.cells = cells;
         this.width = width;
         this.height = height;
+    }
+
+    static String printColumn(int col) {
+        return toUpperCase((char) (col + COL_INDEX)) + "";
+    }
+
+    static String printRow(Integer row) {
+        return Integer.toString(row + ROW_INDEX);
+    }
+
+    static Integer convertColumn(Character column) {
+        return toLowerCase(column) - COL_INDEX;
+    }
+
+    static Integer convertRow(Integer row) {
+        return row - ROW_INDEX;
     }
 
     Board(Integer width, Integer height) {
@@ -131,7 +152,9 @@ class Board {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(printColumnHeaders());
         for (int row = 0; row < height; row++) {
+            stringBuilder.append(String.format("%2s", printRow(row)));
             for (int col = 0; col < width - 1; col++) {
                 stringBuilder.append(" ");
                 stringBuilder.append(printCell(cells[col][row]));
@@ -142,6 +165,17 @@ class Board {
             stringBuilder.append(" \n");
         }
         return stringBuilder.toString();
+    }
+
+    private String printColumnHeaders() {
+        StringBuilder stringBuilder = new StringBuilder(" ");
+        for (int col = 0; col < width; col++) {
+            stringBuilder
+                    .append("  ")
+                    .append(printColumn(col))
+                    .append(" ");
+        }
+        return stringBuilder.append("\n").toString();
     }
 
     private String printCell(Stone stone) {

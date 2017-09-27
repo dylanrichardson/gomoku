@@ -56,7 +56,7 @@ public class GameCommunicationTest {
 
         tryDelete(Paths.get(playerFile(playerName)));
 
-        assertEquals(singletonList("test a 0"), moveFile);
+        assertEquals(singletonList("test A 1"), moveFile);
     }
 
     @Test

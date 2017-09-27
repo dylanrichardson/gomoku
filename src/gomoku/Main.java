@@ -14,7 +14,7 @@ class Main {
         Integer boardWidth = parseWidth(args);
         Integer boardHeight = parseHeight(args);
         Integer winLength = parseLength(args);
-        Debug.print = parseDebug(args);
+        Debug.print = parsePrint(args);
 
         Player player = new Player(playerName, boardWidth, boardHeight, winLength);
         try {
@@ -24,8 +24,8 @@ class Main {
         }
     }
 
-    private static Boolean parseDebug(String[] args) {
-        return Arrays.stream(args).anyMatch(arg -> arg.equals("-D") || arg.equals("--debug"));
+    private static Boolean parsePrint(String[] args) {
+        return Arrays.stream(args).anyMatch(arg -> arg.equals("-P") || arg.equals("--print"));
     }
 
     private static String parseName(String[] args) {

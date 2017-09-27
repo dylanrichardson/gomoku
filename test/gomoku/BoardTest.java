@@ -82,9 +82,10 @@ public class BoardTest {
 
     @Test
     public void print3x3() {
-        String boardString = " F | F | O \n"
-                           + " O |   |   \n"
-                           + "   |   |   \n";
+        String boardString =    "   A   B   C \n"
+                           + " 1 F | F | O \n"
+                           + " 2 O |   |   \n"
+                           + " 3   |   |   \n";
         Board board = new Board(3, 3)
                 .withMove(new Move(FRIENDLY, 0, 0))
                 .withMove(new Move(OPPONENT, 2, 0))

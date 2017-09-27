@@ -11,14 +11,14 @@ public class MoveTest {
     public void toStringIntConstructor() {
         Move move = new Move(FRIENDLY, 1, 0);
 
-        assertEquals("F b 0", move.toString());
+        assertEquals("F B 1", move.toString());
     }
 
     @Test
     public void toStringCharConstructor() {
-        Move move = new Move(OPPONENT, 'B', 0);
+        Move move = new Move(OPPONENT, 'B', 1);
 
-        assertEquals("O b 0", move.toString());
+        assertEquals("O B 1", move.toString());
     }
 
 }
