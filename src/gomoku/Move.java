@@ -61,4 +61,8 @@ class Move {
         result = 31 * result + (row != null ? row.hashCode() : 0);
         return result;
     }
+
+    Move forOpponent() {
+        return new Move(stone.getOpponent(), column, row);
+    }
 }

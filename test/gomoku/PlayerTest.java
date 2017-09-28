@@ -41,7 +41,6 @@ public class PlayerTest {
 //
 //    @Test
 //    public void play15x15() {
-//        Debug.print = true;
 //        play(15, 15, 5);
 //
 //        assertNull(exception);
@@ -121,8 +120,8 @@ public class PlayerTest {
                 InputStreamReader isr = new InputStreamReader(is);
                 BufferedReader br = new BufferedReader(isr);
                 String line;
-                while ( (line = br.readLine()) != null)
-                    Debug.print(line);
+                while ((line = br.readLine()) != null)
+                    System.out.println(line);
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }

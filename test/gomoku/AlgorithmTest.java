@@ -2,15 +2,13 @@ package gomoku;
 
 import org.junit.Test;
 
-import java.util.Collection;
-
+import static gomoku.Algorithm.BLOCK_2ND_WIN_VALUE;
 import static gomoku.Algorithm.DRAW_VALUE;
-import static gomoku.Algorithm.LOSS_VALUE;
 import static gomoku.Algorithm.WIN_VALUE;
 import static gomoku.Stone.FRIENDLY;
 import static gomoku.Stone.OPPONENT;
-import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class AlgorithmTest {
 
@@ -31,10 +29,6 @@ public class AlgorithmTest {
                 .withMove(new Move(OPPONENT, 0, 1));
 
         Move move = new Move(FRIENDLY, 0, 2);
-
-
-        Double evaluation = algorithm.evaluateMove(new Move(FRIENDLY, 1, 2), board, 3, TIME_LIMIT);
-        assertEquals(LOSS_VALUE, evaluation);
         assertEquals(move, algorithm.chooseMove(FRIENDLY, board, 3, TIME_LIMIT));
     }
 
@@ -49,14 +43,12 @@ public class AlgorithmTest {
                 .withMove(new Move(OPPONENT, 0, 1));
 
         Move move = new Move(OPPONENT, 0, 2);
-
-        Double evaluation = algorithm.evaluateMove(new Move(OPPONENT, 0, 2), board, 3, TIME_LIMIT);
-        assertEquals(LOSS_VALUE, evaluation);
         assertEquals(move, algorithm.chooseMove(OPPONENT, board, 3, TIME_LIMIT));
     }
 
     @Test
     public void chooseMove2() {
+        Debug.print = true;
         // F |   |(F)
         // F | O |
         // O |   |
@@ -72,15 +64,21 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void chooseMoveBlock15x15() {
-        // (F)|   |   |
-        //    |   |   |
-        //    |   |   |
-        //    |   |   |
-        Board board = new Board(4, 4);
-        Move move = new Move(FRIENDLY, 0, 0);
+    public void chooseMoveWinOverBlock() {
+        //    |(F)|   |
+        //  O | F |   |
+        //  O | F |   |
+        //  O | F |   |
+        Board board = new Board(4, 4)
+                .withMove(new Move(OPPONENT, 0, 1))
+                .withMove(new Move(OPPONENT, 0, 2))
+                .withMove(new Move(OPPONENT, 0, 3))
+                .withMove(new Move(FRIENDLY, 1, 1))
+                .withMove(new Move(FRIENDLY, 1, 2))
+                .withMove(new Move(FRIENDLY, 1, 3));
 
-        assertEquals(DRAW_VALUE, algorithm.evaluateMove(move, board, 4, TIME_LIMIT));
+        Move move = new Move(FRIENDLY, 1, 0);
+        assertEquals(move, algorithm.chooseMove(FRIENDLY, board, 4, TIME_LIMIT));
     }
 
     // evaluateMove
@@ -109,7 +107,7 @@ public class AlgorithmTest {
                 .withMove(new Move(OPPONENT, 1, 0));
         Move move = new Move(FRIENDLY, 2, 1);
 
-        assertEquals(LOSS_VALUE, algorithm.evaluateMove(move, board, 3, TIME_LIMIT));
+        assertEquals(WIN_VALUE * -1, algorithm.evaluateMove(move, board, 3, TIME_LIMIT), 0);
     }
 
     @Test
@@ -125,7 +123,7 @@ public class AlgorithmTest {
 
         Move move = new Move(FRIENDLY, 1, 0);
 
-        assertEquals(LOSS_VALUE, algorithm.evaluateMove(move, board, 3, TIME_LIMIT));
+        assertEquals(WIN_VALUE * -1, algorithm.evaluateMove(move, board, 3, TIME_LIMIT), 0);
     }
 
     @Test
@@ -144,7 +142,7 @@ public class AlgorithmTest {
         Move move = new Move(FRIENDLY, 0, 2);
 
 
-        assertEquals(LOSS_VALUE, algorithm.evaluateMove(move, board, 3, TIME_LIMIT));
+        assertEquals(WIN_VALUE * -1, algorithm.evaluateMove(move, board, 3, TIME_LIMIT), 0);
     }
 
     @Test
@@ -180,7 +178,7 @@ public class AlgorithmTest {
                 .withMove(new Move(OPPONENT, 1, 0));
         Move move = new Move(FRIENDLY, 0, 2);
 
-        assertEquals(LOSS_VALUE, algorithm.evaluateMove(move, board, 3, TIME_LIMIT));
+        assertEquals(WIN_VALUE * -1, algorithm.evaluateMove(move, board, 3, TIME_LIMIT), 0);
     }
 
     @Test
@@ -225,23 +223,6 @@ public class AlgorithmTest {
         assertEquals(DRAW_VALUE, algorithm.evaluateMove(move, board, 4, TIME_LIMIT));
     }
 
-    @Test
-    public void chooseMove2BeforeLoss() {
-        //    |   |   |
-        // (F)| O | O |(F)
-        //    |   |   |
-        //    |   |   |
-        Board board = new Board(4, 4)
-                .withMove(new Move(OPPONENT, 1, 1))
-                .withMove(new Move(OPPONENT, 2, 1));
-        Collection<Move> possibleMoves = asList(
-                new Move(FRIENDLY, 0, 1),
-                new Move(FRIENDLY, 3, 1));
-
-        Move move = algorithm.chooseMove(FRIENDLY, board, 4, TIME_LIMIT);
-        assertTrue("move: " + move, possibleMoves.contains(move));
-    }
-
     // time limit
 
     @Test
@@ -273,7 +254,8 @@ public class AlgorithmTest {
     public void getHeuristic() {
         // TODO
         Board board = new Board(15, 15);
-        algorithm.getHeuristic(board);
+        Move move = new Move(FRIENDLY, 0, 0);
+        algorithm.getHeuristic(board, move);
     }
 
     // getPossibleMoves

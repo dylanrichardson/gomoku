@@ -1,7 +1,12 @@
 package gomoku;
 
 import com.sun.tools.javac.util.Pair;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 import static gomoku.Stone.FRIENDLY;
 import static gomoku.Stone.OPPONENT;
 import static java.lang.Character.toLowerCase;
@@ -9,7 +14,7 @@ import static java.lang.Character.toUpperCase;
 
 class Board {
 
-    static final Character COL_INDEX = 'a';
+    private static final Character COL_INDEX = 'a';
     private static final int ROW_INDEX = 1;
 
     private final Stone[][] cells;
@@ -80,68 +85,43 @@ class Board {
         return getOpenCells().isEmpty();
     }
 
-    Boolean willBeTerminalCell(Integer col, Integer row, Integer winLength) {
-        return getNumInARowHorizontal(col, row, winLength) >= winLength - 1
-                || getNumInARowVertical(col, row, winLength) >= winLength - 1
-                || getNumInARowPositiveDiagonal(col, row, winLength) >= winLength - 1
-                || getNumInARowNegativeDiagonal(col, row, winLength) >= winLength - 1;
+    Boolean willBeWin(Move move, Integer winLength) {
+        Integer minLength = winLength - 1;
+        return Direction.semiCircle().anyMatch(dir ->
+                getNumInARow(move, winLength, dir) + getNumInARow(move, winLength, dir.flip()) >= minLength);
     }
 
-    private Integer getNumInARowNegativeDiagonal(Integer col, Integer row, Integer winLength) {
-        return getNumInARowNorthWest(col, row, winLength) + getNumInARowSouthEast(col, row, winLength);
+    Boolean willBeBlock(Move move, Integer winLength) {
+        return willBeWin(move.forOpponent(), winLength);
     }
 
-    private Integer getNumInARowSouthEast(Integer col, Integer row, Integer winLength) {
-        return getNumInARow(col, row, winLength, 1, 1);
+    Boolean willBeBlockIn2Moves(Move move, Integer winLength) {
+        return Direction.all().anyMatch(dir -> willBeBlockIn2Moves(move, winLength, dir));
     }
 
-    private Integer getNumInARowNorthWest(Integer col, Integer row, Integer winLength) {
-        return getNumInARow(col, row, winLength, -1, -1);
+    private Boolean willBeBlockIn2Moves(Move move, Integer winLength, Direction direction) {
+        int col = move.getColumn() + winLength * direction.dCol;
+        int row = move.getRow() + winLength * direction.dRow;
+        int oppLength = winLength - 2;
+        return     isWithinBounds(col, row)
+                && getNumInARow(move.forOpponent(), oppLength, direction) == oppLength
+                && getStoneInCell(col, row) == null
+                && getStoneInCell(col - direction.dCol, row - direction.dRow) == null;
     }
 
-    private Integer getNumInARowPositiveDiagonal(Integer col, Integer row, Integer winLength) {
-        return getNumInARowNorthEast(col, row, winLength) + getNumInARowSouthWest(col, row, winLength);
+    private Boolean isWithinBounds(Integer col, Integer row) {
+        return     0 <= col && col < width
+                && 0 <= row && row < height;
     }
 
-    private Integer getNumInARowSouthWest(Integer col, Integer row, Integer winLength) {
-        return getNumInARow(col, row, winLength, -1, 1);
-    }
-
-    private Integer getNumInARowNorthEast(Integer col, Integer row, Integer winLength) {
-        return getNumInARow(col, row, winLength, 1, -1);
-    }
-
-    private Integer getNumInARowVertical(Integer col, Integer row, Integer winLength) {
-        return getNumInARowNorth(col, row, winLength) + getNumInARowSouth(col, row, winLength);
-    }
-
-    private Integer getNumInARowNorth(Integer col, Integer row, Integer winLength) {
-        return getNumInARow(col, row, winLength, 0, -1);
-    }
-
-    private Integer getNumInARowSouth(Integer col, Integer row, Integer winLength) {
-        return getNumInARow(col, row, winLength, 0, 1);
-    }
-
-    private Integer getNumInARowHorizontal(Integer col, Integer row, Integer winLength) {
-        return getNumInARowWest(col, row, winLength) + getNumInARowEast(col, row, winLength);
-    }
-
-    private Integer getNumInARowEast(Integer col, Integer row, Integer winLength) {
-        return getNumInARow(col, row, winLength, 1, 0);
-    }
-
-    private Integer getNumInARowWest(Integer col, Integer row, Integer winLength) {
-        return getNumInARow(col, row, winLength, -1, 0);
-    }
-
-    private Integer getNumInARow(Integer col, Integer row, Integer winLength, Integer dCol, Integer dRow) {
-        Stone stone = getStoneInCell(col + dCol, row + dRow);
-        if (stone == null)
+    private Integer getNumInARow(Move move, Integer length, Direction direction) {
+        if (length == 1)
             return 0;
-        int numInARow = 2;
-        for (; numInARow < winLength; numInARow++) {
-            if (getStoneInCell(col + dCol * numInARow, row + dRow * numInARow) != stone) {
+        int numInARow = 1;
+        for (; numInARow < length; numInARow++) {
+            int newCol = move.getColumn() + direction.dCol * numInARow;
+            int newRow = move.getRow() + direction.dRow * numInARow;
+            if (getStoneInCell(newCol, newRow) != move.getStone()) {
                 numInARow--;
                 break;
             }
