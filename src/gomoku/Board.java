@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import static gomoku.Direction.North;
+import static gomoku.Direction.South;
 import static gomoku.Stone.FRIENDLY;
 import static gomoku.Stone.OPPONENT;
 import static java.lang.Character.toLowerCase;
@@ -96,15 +98,17 @@ class Board {
     }
 
     Boolean willBeBlockIn2Moves(Move move, Integer winLength) {
-        return Direction.all().anyMatch(dir -> willBeBlockIn2Moves(move, winLength, dir));
+        return Direction.all().anyMatch(dir -> {
+            int col = move.getColumn() + winLength * dir.dCol;
+            int row = move.getRow() + winLength * dir.dRow;
+            int oppLength = winLength - 2;
+            return willBeBlockIn2MovesInDirection(move.forOpponent(), col, row, oppLength, dir);
+        });
     }
 
-    private Boolean willBeBlockIn2Moves(Move move, Integer winLength, Direction direction) {
-        int col = move.getColumn() + winLength * direction.dCol;
-        int row = move.getRow() + winLength * direction.dRow;
-        int oppLength = winLength - 2;
+    private Boolean willBeBlockIn2MovesInDirection(Move move, Integer col, Integer row, Integer length, Direction direction) {
         return     isWithinBounds(col, row)
-                && getNumInARow(move.forOpponent(), oppLength, direction) == oppLength
+                && getNumInARow(move, length, direction).equals(length)
                 && getStoneInCell(col, row) == null
                 && getStoneInCell(col - direction.dCol, row - direction.dRow) == null;
     }
@@ -164,6 +168,16 @@ class Board {
         if (stone == OPPONENT)
             return "O";
         return " ";
+    }
+
+    Boolean willBeComboBlock(Move move, Integer winLength) {
+        Board board = withMove(move.forOpponent());
+        Integer minLength = winLength - 1;
+        Move northMove = new Move(move.getStone().getOpponent(), move.getColumn() + North.dCol, move.getRow() + North.dRow);
+        Integer numInARow = getNumInARow(northMove, winLength, South);
+        if (numInARow >= minLength)
+            return true;
+        return false;
     }
 }
 

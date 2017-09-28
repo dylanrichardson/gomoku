@@ -6,7 +6,6 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collection;
 
-import static gomoku.Algorithm.BLOCK_2ND_WIN_VALUE;
 import static gomoku.Stone.FRIENDLY;
 import static gomoku.Stone.OPPONENT;
 import static org.junit.Assert.*;
@@ -424,6 +423,29 @@ public class BoardTest {
 
         Move move = new Move(FRIENDLY, 0, 0);
         assertTrue(board.willBeBlockIn2Moves(move, 5));
+    }
+
+    // intersection of 2 2-away wins
+    // opponent move would produce 2 ways to win
+
+    @Test
+    public void willBeComboBlockWestAndSouth() {
+        Debug.on();
+        //   |   |   |
+        // O | O | O |(F)
+        //   |   |   | O
+        //   |   |   | O
+        //   |   |   | O
+        Board board = new Board(4, 5)
+                .withMove(new Move(OPPONENT, 0, 1))
+                .withMove(new Move(OPPONENT, 1, 1))
+                .withMove(new Move(OPPONENT, 2, 1))
+                .withMove(new Move(OPPONENT, 3, 2))
+                .withMove(new Move(OPPONENT, 3, 3))
+                .withMove(new Move(OPPONENT, 3, 4));
+
+        Move move = new Move(FRIENDLY, 3, 1);
+        assertTrue(board.willBeComboBlock(move, 5));
     }
 
 }
