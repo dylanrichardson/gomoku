@@ -20,20 +20,20 @@ class Algorithm {
     private static final RuntimeException NO_MOVES_LEFT = new RuntimeException("No moves left to make");
     private static final Double MIN_TIME_LIMIT = 50000.0; // ns
 
-    Move chooseMove(Stone stone, Board board, Integer winLength, Double timeLimit) {
+    Move chooseMove(Stone stone, Board board, Integer winLength,Double timeLimit) {
         long startTime = System.nanoTime();
         Supplier<Double> timeLeft = () -> getTimeLeft(startTime, timeLimit);
 
         Move bestMove = null;
         Double bestScore = -1 * WIN_VALUE;
         List<Move> moves = getPossibleMoves(stone, board);
-        reverse(moves);
+        //reverse(moves);
 
         for (int i = 0; i < moves.size(); i++) {
             Double newTimeLimit = timeLeft.get() / (moves.size() - i);
             Move move = moves.get(i);
-
-            Double score = evaluateMove(move, board, winLength, newTimeLimit);
+            Debug.debug(move);
+            Double score = evaluateMove(move, board, winLength, -1 * WIN_VALUE, WIN_VALUE,newTimeLimit);
             Debug.debug(move);
             Debug.debug(score);
             if (score >= bestScore) {
@@ -50,7 +50,7 @@ class Algorithm {
         return bestMove;
     }
 
-    Double evaluateMove(Move move, Board board, Integer winLength, Double timeLimit) {
+    Double evaluateMove(Move move, Board board, Integer winLength, Double alpha, Double beta, Double timeLimit) {
         long startTime = System.nanoTime();
 
         // check if win
@@ -71,18 +71,18 @@ class Algorithm {
         }
 
         Board newBoard = board.withMove(move);
-        return HEURISTIC_FACTOR *  getExtremeValue(move.getStone().getOpponent(), newBoard, winLength, getTimeLeft(startTime, timeLimit));
+        return HEURISTIC_FACTOR *  getExtremeValue(move.getStone().getOpponent(), newBoard, winLength, alpha, beta, getTimeLeft(startTime, timeLimit));
     }
 
     // minimax
-    private Double getExtremeValue(Stone stone, Board board, Integer winLength, Double timeLimit) {
+    private Double getExtremeValue(Stone stone, Board board, Integer winLength, Double alpha, Double beta, Double timeLimit) {
         long startTime = System.nanoTime();
 
         if (board.isDraw()) {
             return DRAW_VALUE;
         }
-
-        Integer mod = (stone == FRIENDLY) ? 1 : -1;
+        Boolean isFriendly = (stone == FRIENDLY);
+        Integer mod = (isFriendly) ? 1 : -1;
         Double extremeScore = -1 * WIN_VALUE;
         Move extremeMove = null;
         List<Move> moves = getPossibleMoves(stone, board);
@@ -94,9 +94,12 @@ class Algorithm {
                 return getHeuristic(board, extremeMove);
             }
 
+
             Move move = moves.get(i);
             // recurse in minimax
-            Double score = mod * evaluateMove(move, board, winLength, newTimeLimit);
+            Double score = mod * evaluateMove(move, board, winLength, alpha, beta, newTimeLimit);
+            Debug.print(move);
+            Debug.print(score);
             if (score >= extremeScore) {
                 extremeScore = score;
                 extremeMove = move;
@@ -104,11 +107,29 @@ class Algorithm {
                     break;
                 }
             }
+            if(isFriendly) {
+                if (score > alpha) {
+                    alpha = score;
+                }
+            }
+            else
+            if(score < beta){
+                beta = score;
+            }
+            if (alpha > beta){
+                prune();
+                break;
+            }
+
         }
 
         if (extremeMove == null)
             throw NO_MOVES_LEFT;
         return extremeScore * mod;
+    }
+
+     void prune() {
+        Debug.print("prune");
     }
 
     Double getHeuristic(Board board, Move move) {

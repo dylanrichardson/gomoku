@@ -61,8 +61,8 @@ class Board {
 
     Collection<Pair<Integer, Integer>> getOpenCells() {
         List<Pair<Integer, Integer>> openCells = new ArrayList<>();
-        for (int col = 0; col < width; col++) {
-            for (int row = 0; row < height; row++) {
+        for (int row = 0; row < height; row++) {
+            for (int col = 0; col < width; col++) {
                 if (cells[col][row] == null) {
                     openCells.add(new Pair<>(col, row));
                 }

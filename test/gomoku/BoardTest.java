@@ -5,6 +5,8 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import static gomoku.Stone.FRIENDLY;
 import static gomoku.Stone.OPPONENT;
@@ -42,7 +44,7 @@ public class BoardTest {
     public void getOpenCells3x3() {
         Board board = new Board(3, 3)
                 .withMove(new Move(FRIENDLY, 0, 0));
-        Collection<Pair<Integer, Integer>> openCells = Arrays.asList(
+        Set<Pair<Integer, Integer>> openCells = new HashSet<>(Arrays.asList(
                 new Pair<>(0,1),
                 new Pair<>(0,2),
                 new Pair<>(1,0),
@@ -50,8 +52,9 @@ public class BoardTest {
                 new Pair<>(1,2),
                 new Pair<>(2,0),
                 new Pair<>(2,1),
-                new Pair<>(2,2));
-        assertEquals(openCells, board.getOpenCells());
+                new Pair<>(2,2)));
+
+        assertEquals(openCells,new HashSet<>(board.getOpenCells()));
     }
 
     // isValidMove
@@ -430,7 +433,7 @@ public class BoardTest {
 
     @Test
     public void willBeComboBlockWestAndSouth() {
-        Debug.on();
+
         //   |   |   |
         // O | O | O |(F)
         //   |   |   | O
