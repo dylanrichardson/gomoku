@@ -14,4 +14,8 @@ class Debug {
         if (debug)
             print(x);
     }
+
+    static void on() {
+        print = debug = true;
+    }
 }
