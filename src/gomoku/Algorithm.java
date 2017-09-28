@@ -5,17 +5,17 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static gomoku.Stone.FRIENDLY;
+import static gomoku.Stone.OPPONENT;
 
 
 class Algorithm {
 
     static final Double WIN_VALUE = 1.0;
-    static final Double BLOCK_WIN_VALUE = 0.5;
-    static final Double BLOCK_2ND_WIN_VALUE = 0.25;
     static final Double DRAW_VALUE = 0.0;
+    static final Double LOSS_VALUE = -1.0;
 
     private static final RuntimeException NO_MOVES_LEFT = new RuntimeException("No moves left to make");
-    private static final Double MIN_TIME_LIMIT = 10000.0; // ns
+    private static final Double MIN_TIME_LIMIT = 5000.0; // ns
 
     Move chooseMove(Stone stone, Board board, Integer winLength, Double timeLimit) {
         long startTime = System.nanoTime();
@@ -23,18 +23,17 @@ class Algorithm {
 
         Integer mod = (stone == FRIENDLY) ? 1 : -1;
         Move bestMove = null;
-        Double bestScore = -1 * WIN_VALUE;
+        Double bestScore = LOSS_VALUE;
         // TODO get terminal moves if possible
         List<Move> moves = getPossibleMoves(stone, board);
 
         for (int i = 0; i < moves.size(); i++) {
             Double newTimeLimit = timeLeft.get() / (moves.size() - i);
-            Move move = moves.get(i);
 
-            Double score = mod * evaluateMove(move, board, winLength, newTimeLimit);
-            if (score >= bestScore) {
+            Double score = mod * evaluateMove(moves.get(i), board, winLength, newTimeLimit);
+            if (score > bestScore) {
                 bestScore = score;
-                bestMove = move;
+                bestMove = moves.get(i);
                 if (score.equals(WIN_VALUE)) {
                     break;
                 }
@@ -47,66 +46,30 @@ class Algorithm {
     }
 
     Double evaluateMove(Move move, Board board, Integer winLength, Double timeLimit) {
-        long startTime = System.nanoTime();
         Debug.debug(move);
+        long startTime = System.nanoTime();
+        Supplier<Double> timeLeft = () -> getTimeLeft(startTime, timeLimit);
 
-        int mod = move.getStone() == FRIENDLY ? 1 : -1;
-        // check if win
-        if (board.willBeWin(move, winLength)) {
-            return WIN_VALUE * mod;
-        }
-        // check if block
-        if (board.willBeBlock(move, winLength)) {
-            return BLOCK_WIN_VALUE * mod;
-        }
-        // check if two before loss
-        if (board.willBeBlockIn2Moves(move, winLength)) {
-            return BLOCK_2ND_WIN_VALUE * mod;
+        Boolean isFriendly = move.getStone() == FRIENDLY;
+        // check if (blocking) win
+        if (board.willBeTerminalCell(move.getColumn(), move.getRow(), winLength)) {
+            return isFriendly ? WIN_VALUE : LOSS_VALUE;
         }
 
         Board newBoard = board.withMove(move);
-        Double extremeValue = getExtremeValue(move.getStone().getOpponent(), newBoard, winLength, getTimeLeft(startTime, timeLimit));
-        if (extremeValue > DRAW_VALUE) Debug.debug("\nboard: " + board + "move: " + move + "\nvalue: " + extremeValue + "");
-        return extremeValue;
+        if (isFriendly) {
+            return getMinValue(newBoard, "", winLength, timeLeft.get());
+        } else {
+            return getMaxValue(newBoard, "", winLength, timeLeft.get());
+        }
     }
 
-    private Double getExtremeValue(Stone stone, Board board, Integer winLength, Double timeLimit) {
-        long startTime = System.nanoTime();
-
-        if (board.isDraw()) {
-            return DRAW_VALUE;
-        }
-
-        Integer mod = (stone == FRIENDLY) ? 1 : -1;
-        Double extremeScore = -1 * WIN_VALUE;
-        Move extremeMove = null;
-        List<Move> moves = getPossibleMoves(stone, board);
-
-        for (int i = 0; i < moves.size(); i++) {
-            Double newTimeLimit = getTimeLeft(startTime, timeLimit) / (moves.size() - i);
-            // check if out of time
-            if (newTimeLimit < MIN_TIME_LIMIT)
-                return getHeuristic(board, extremeMove);
-
-            Move move = moves.get(i);
-            // recurse in minimax
-            Double score = mod * evaluateMove(move, board, winLength, newTimeLimit);
-            if (score >= extremeScore) {
-                extremeScore = score;
-                extremeMove = move;
-                if (score.equals(WIN_VALUE)) {
-                    break;
-                }
-            }
-        }
-
-        if (extremeMove == null)
-            throw NO_MOVES_LEFT;
-        return extremeScore * mod;
-    }
-
-    Double getHeuristic(Board board, Move move) {
+    Double getHeuristic(Board board) {
         return DRAW_VALUE;
+    }
+
+    private Double getTimeLeft(Long startTime, Double timeLeft) {
+        return timeLeft - (System.nanoTime() - startTime);
     }
 
     List<Move> getPossibleMoves(Stone stone, Board board) {
@@ -118,12 +81,83 @@ class Algorithm {
                 .collect(Collectors.toList());
     }
 
-    private Double getTimeLeft(Long startTime, Double timeLeft) {
-        return timeLeft - (System.nanoTime() - startTime);
+    private Double getMinValue(Board board, String tab, Integer winLength, Double timeLimit) {
+        return getExtremeValue(OPPONENT, board, this::getMaxValue, tab + "   ", winLength, alpha, beta, timeLimit);
+    }
+
+    private Double getMaxValue(Board board, String tab, Integer winLength, Double timeLimit) {
+        return getExtremeValue(FRIENDLY, board, this::getMinValue, tab + "   ", winLength, alpha, beta, timeLimit);
+    }
+
+    private Double getExtremeValue(
+            //TODO include alpha and beta
+            Stone stone,
+            Board board,
+            QuadFunction<Board, String, Integer, Double, Double> getNextExtremeValue,
+            String tab,
+            Integer winLength,
+            Double alpha,
+            Double beta,
+            Double timeLimit) {
+
+        long startTime = System.nanoTime();
+        Supplier<Double> timeLeft = () -> getTimeLeft(startTime, timeLimit);
+
+
+        if (board.isDraw()) {
+            return DRAW_VALUE;
+        }
+
+        Integer mod = (stone == FRIENDLY) ? 1 : -1;
+        Double extremeScore = LOSS_VALUE * mod;
+        Move extremeMove = null;
+        List<Move> moves = getPossibleMoves(stone, board);
+
+        for (int i = 0; i < moves.size(); i++) {
+            Debug.debug(tab + moves.get(i));
+            Double newTimeLimit = timeLeft.get() / (moves.size() - i);
+            // check if out of time
+            if (newTimeLimit < MIN_TIME_LIMIT)
+                return getHeuristic(board.withMove(extremeMove));
+
+            Move move = moves.get(i);
+            // choose first terminal move
+            if (board.willBeTerminalCell(move.getColumn(), move.getRow(), winLength)) {
+                extremeMove = move;
+                extremeScore = WIN_VALUE;
+                break;
+            }
+            else
+                //TODO check if it is in max
+                if ("cff it is in max state"){
+                alpha = Math.max(alpha, getHeuristic(board.withMove(extremeMove)));
+                }
+                else
+                    //TODO check if it is min
+                    if ("chek if is in the min state"){
+                        alpha = Math.min(beta, getHeuristic(board.withMove(extremeMove)));
+                    }
+            // recurse in minimax
+            Double score = mod * getNextExtremeValue.apply(board.withMove(move), tab, winLength, newTimeLimit);
+            Debug.debug(tab + score);
+            if (score >= extremeScore * mod) {
+                //beta = Math.min(beta, getHeuristic(board.withMove(extremeMove)));
+                extremeScore = score;
+                extremeMove = move;
+                if (score.equals(WIN_VALUE)) {
+                    break;
+                }
+            }
+        }
+
+        if (extremeMove == null)
+            throw NO_MOVES_LEFT;
+        Debug.debug(tab + "score: " + extremeScore);
+        return extremeScore * mod;
     }
 
     @FunctionalInterface
-    private interface QuadFunction<A,B,C,D,R> {
+    interface QuadFunction<A,B,C,D,R> {
         R apply(A a, B b, C c, D d);
     }
 }
