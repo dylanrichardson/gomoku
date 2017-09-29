@@ -1,12 +1,17 @@
 package gomoku;
 
-import com.sun.tools.javac.util.Pair;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import static gomoku.Main.BOARD_SIDE_LENGTH;
+import static gomoku.Main.WIN_LENGTH;
 import static gomoku.Stone.FRIENDLY;
 import static gomoku.Stone.OPPONENT;
 import static org.junit.Assert.*;
@@ -95,353 +100,66 @@ public class BoardTest {
         assertEquals(boardString, board.toString());
     }
 
-    // isWin
+    // strategies
 
     @Test
-    public void isWinWest() {
-        // F | F | F | F |(F)| ...
-        //   |   |   |   |   | ...
-        // ...
-        Board board = new Board(15, 15)
-                .withMove(new Move(FRIENDLY, 0, 0))
-                .withMove(new Move(FRIENDLY, 1, 0))
-                .withMove(new Move(FRIENDLY, 2, 0))
-                .withMove(new Move(FRIENDLY, 3, 0));
-
-        assertTrue(board.isWin(new Move(FRIENDLY,4, 0), 5));
+    public void isWin() {
+        testStrategy(BoardTest::isWin, 4);
     }
 
     @Test
-    public void isWinEast() {
-        //(F)| F | F | F | F | ...
-        //   |   |   |   |   | ...
-        // ...
-        Board board = new Board(15, 15)
-                .withMove(new Move(FRIENDLY, 1, 0))
-                .withMove(new Move(FRIENDLY, 2, 0))
-                .withMove(new Move(FRIENDLY, 3, 0))
-                .withMove(new Move(FRIENDLY, 4, 0));
-
-        assertTrue(board.isWin(new Move(FRIENDLY,0, 0), 5));
+    public void isBlock() {
+        testStrategy(BoardTest::isBlock, 4);
     }
 
     @Test
-    public void isWin3West1East() {
-        // F | F | F |(F)| F | ...
-        //   |   |   |   |   | ...
-        // ...
-        Board board = new Board(15, 15)
-                .withMove(new Move(FRIENDLY, 0, 0))
-                .withMove(new Move(FRIENDLY, 1, 0))
-                .withMove(new Move(FRIENDLY, 2, 0))
-                .withMove(new Move(FRIENDLY, 4, 0));
-
-        assertTrue(board.isWin(new Move(FRIENDLY,3, 0), 5));
+    public void is2AwayWin() {
+        testStrategy(BoardTest::is2AwayWin, 3);
     }
 
     @Test
-    public void isWin2West2East() {
-        // F | F |(F)| F | F | ...
-        //   |   |   |   |   | ...
-        // ...
-        Board board = new Board(15, 15)
-                .withMove(new Move(FRIENDLY, 0, 0))
-                .withMove(new Move(FRIENDLY, 1, 0))
-                .withMove(new Move(FRIENDLY, 3, 0))
-                .withMove(new Move(FRIENDLY, 4, 0));
-
-        assertTrue(board.isWin(new Move(FRIENDLY,2, 0), 5));
+    public void is2AwayBlock() {
+        testStrategy(BoardTest::is2AwayBlock, 3);
     }
 
-    @Test
-    public void isWinNorth() {
-        // F |   | ...
-        // F |   | ...
-        // F |   | ...
-        // F |   | ...
-        //(F)|   | ...
-        // ...
-        Board board = new Board(15, 15)
-                .withMove(new Move(FRIENDLY, 0, 0))
-                .withMove(new Move(FRIENDLY, 0, 1))
-                .withMove(new Move(FRIENDLY, 0, 2))
-                .withMove(new Move(FRIENDLY, 0, 3));
-
-        assertTrue(board.isWin(new Move(FRIENDLY,0, 4), 5));
+    private static Boolean isWin(Board board, Move move) {
+        return board.isWin(move, WIN_LENGTH);
     }
 
-    @Test
-    public void isWinSouth() {
-        //(F)|   | ...
-        // F |   | ...
-        // F |   | ...
-        // F |   | ...
-        // F |   | ...
-        // ...
-        Board board = new Board(15, 15)
-                .withMove(new Move(FRIENDLY, 0, 1))
-                .withMove(new Move(FRIENDLY, 0, 2))
-                .withMove(new Move(FRIENDLY, 0, 3))
-                .withMove(new Move(FRIENDLY, 0, 4));
-
-        assertTrue(board.isWin(new Move(FRIENDLY,0, 0), 5));
+    private static Boolean isBlock(Board board, Move move) {
+        return board.isBlock(move.forOpponent(), WIN_LENGTH);
     }
 
-    @Test
-    public void isWin2North2South() {
-        // F |   | ...
-        // F |   | ...
-        //(F)|   | ...
-        // F |   | ...
-        // F |   | ...
-        // ...
-        Board board = new Board(15, 15)
-                .withMove(new Move(FRIENDLY, 0, 0))
-                .withMove(new Move(FRIENDLY, 0, 1))
-                .withMove(new Move(FRIENDLY, 0, 3))
-                .withMove(new Move(FRIENDLY, 0, 4));
-
-        assertTrue(board.isWin(new Move(FRIENDLY,0, 2), 5));
+    private static Boolean is2AwayWin(Board board, Move move) {
+        return board.is2AwayWin(move, WIN_LENGTH);
     }
 
-    @Test
-    public void isWinNorthEast() {
-        //   |   |   |   | F | ...
-        //   |   |   | F |   |   ...
-        //   |   | F |   |   |   ...
-        //   | F |   |   |   |   ...
-        //(F)|   |   |   |   |   ...
-        Board board = new Board(15, 15)
-                .withMove(new Move(FRIENDLY, 4, 0))
-                .withMove(new Move(FRIENDLY, 3, 1))
-                .withMove(new Move(FRIENDLY, 2, 2))
-                .withMove(new Move(FRIENDLY, 1, 3));
-
-        assertTrue(board.isWin(new Move(FRIENDLY,0, 4), 5));
+    private static Boolean is2AwayBlock(Board board, Move move) {
+        return board.is2AwayBlock(move.forOpponent(), WIN_LENGTH);
     }
 
-    @Test
-    public void isWinSouthWest() {
-        //   |   |   |   |(F)| ...
-        //   |   |   | F |   |   ...
-        //   |   | F |   |   |   ...
-        //   | F |   |   |   |   ...
-        // F |   |   |   |   |   ...
-        Board board = new Board(15, 15)
-                .withMove(new Move(FRIENDLY, 3, 1))
-                .withMove(new Move(FRIENDLY, 2, 2))
-                .withMove(new Move(FRIENDLY, 1, 3))
-                .withMove(new Move(FRIENDLY, 0, 4));
-
-        assertTrue(board.isWin(new Move(FRIENDLY,4, 0), 5));
+    private void testStrategy(BiFunction<Board, Move, Boolean> isStrategy, Integer length) {
+        IntStream.range(0, length + 1)
+                .forEach(countDir -> forEachDirection(isStrategy, countDir, length - countDir));
     }
 
-    @Test
-    public void isWin2NorthEast2SouthWest() {
-        //   |   |   |   | F | ...
-        //   |   |   | F |   |   ...
-        //   |   |(F)|   |   |   ...
-        //   | F |   |   |   |   ...
-        // F |   |   |   |   |   ...
-        Board board = new Board(15, 15)
-                .withMove(new Move(FRIENDLY, 4, 0))
-                .withMove(new Move(FRIENDLY, 3, 1))
-                .withMove(new Move(FRIENDLY, 1, 3))
-                .withMove(new Move(FRIENDLY, 0, 4));
+    private void forEachDirection(BiFunction<Board, Move, Boolean> isStrategy, Integer countDir, Integer countOppDir) {
+        Direction.all().forEach(direction -> {
+            Move move = new Move(FRIENDLY, BOARD_SIDE_LENGTH / 2,  BOARD_SIDE_LENGTH / 2);
+            Board board = new Board(BOARD_SIDE_LENGTH, BOARD_SIDE_LENGTH)
+                    .withMoves(getMovesInDirection(move, direction, countDir))
+                    .withMoves(getMovesInDirection(move, direction.opposite(), countOppDir));
 
-        assertTrue(board.isWin(new Move(FRIENDLY,2, 2), 5));
+            String errMsg = "\n" + board + "direction: " + direction + " countDir: " + countDir;
+            assertTrue(errMsg, isStrategy.apply(board, move));
+        });
     }
 
-    @Test
-    public void isWinNorthWest() {
-        // F |   |   |   |   | ...
-        //   | F |   |   |   |   ...
-        //   |   | F |   |   |   ...
-        //   |   |   | F |   |   ...
-        //   |   |   |   |(F)|   ...
-        Board board = new Board(15, 15)
-                .withMove(new Move(FRIENDLY, 0, 0))
-                .withMove(new Move(FRIENDLY, 1, 1))
-                .withMove(new Move(FRIENDLY, 2, 2))
-                .withMove(new Move(FRIENDLY, 3, 3));
-
-        assertTrue(board.isWin(new Move(FRIENDLY,4, 4), 5));
-    }
-
-    @Test
-    public void isWinSouthEast() {
-        //(F)|   |   |   |   | ...
-        //   | F |   |   |   |   ...
-        //   |   | F |   |   |   ...
-        //   |   |   | F |   |   ...
-        //   |   |   |   | F |   ...
-        Board board = new Board(15, 15)
-                .withMove(new Move(FRIENDLY, 1, 1))
-                .withMove(new Move(FRIENDLY, 2, 2))
-                .withMove(new Move(FRIENDLY, 3, 3))
-                .withMove(new Move(FRIENDLY, 4, 4));
-
-        assertTrue(board.isWin(new Move(FRIENDLY,0, 0), 5));
-    }
-
-    @Test
-    public void isWinFalse() {
-        // F | F | F |(F)| ...
-        //   |   |   |   | ...
-        // ...
-        Board board = new Board(15, 15)
-                .withMove(new Move(FRIENDLY, 0, 0))
-                .withMove(new Move(FRIENDLY, 1, 0))
-                .withMove(new Move(FRIENDLY, 2, 0));
-
-        assertFalse(board.isWin(new Move(FRIENDLY,3, 0), 5));
-    }
-
-    @Test
-    public void is2AwayBlockEast() {
-        //   |   |   |   |   |
-        //(F)| O | O | O |   |
-        //   |   |   |   |   |
-        Board board = new Board(6, 3)
-                .withMove(new Move(OPPONENT, 1, 1))
-                .withMove(new Move(OPPONENT, 2, 1))
-                .withMove(new Move(OPPONENT, 3, 1));
-
-        Move move = new Move(FRIENDLY, 0, 1);
-        assertTrue(board.is2AwayBlock(move, 5));
-    }
-
-    @Test
-    public void is2AwayBlockWest() {
-        //   |   |   |   |   |
-        //   |   | O | O | O |(F)
-        //   |   |   |   |   |
-        Board board = new Board(6, 3)
-                .withMove(new Move(OPPONENT, 2, 1))
-                .withMove(new Move(OPPONENT, 3, 1))
-                .withMove(new Move(OPPONENT, 4, 1));
-
-        Move move = new Move(FRIENDLY, 5, 1);
-        assertTrue(board.is2AwayBlock(move, 5));
-    }
-
-    @Test
-    public void is2AwayBlockNorth() {
-        //   |   |
-        //   |   |
-        //   | O |
-        //   | O |
-        //   | O |
-        //   |(F)|
-        Board board = new Board(3, 6)
-                .withMove(new Move(OPPONENT, 1, 2))
-                .withMove(new Move(OPPONENT, 1, 3))
-                .withMove(new Move(OPPONENT, 1, 4));
-
-        Move move = new Move(FRIENDLY, 1, 5);
-        assertTrue(board.is2AwayBlock(move, 5));
-    }
-
-    @Test
-    public void is2AwayBlockSouth() {
-        //   |(F)|
-        //   | O |
-        //   | O |
-        //   | O |
-        //   |   |
-        //   |   |
-        Board board = new Board(3, 6)
-                .withMove(new Move(OPPONENT, 1, 1))
-                .withMove(new Move(OPPONENT, 1, 2))
-                .withMove(new Move(OPPONENT, 1, 3));
-
-        Move move = new Move(FRIENDLY, 1, 0);
-        assertTrue(board.is2AwayBlock(move, 5));
-    }
-
-    @Test
-    public void is2AwayBlockNorthEast() {
-        //   |   |   |   |   |
-        //   |   |   |   |   |
-        //   |   |   | O |   |
-        //   |   | O |   |   |
-        //   | O |   |   |   |
-        //(F)|   |   |   |   |
-        Board board = new Board(6, 6)
-                .withMove(new Move(OPPONENT, 1, 4))
-                .withMove(new Move(OPPONENT, 2, 3))
-                .withMove(new Move(OPPONENT, 3, 2));
-
-        Move move = new Move(FRIENDLY, 0, 5);
-        assertTrue(board.is2AwayBlock(move, 5));
-    }
-
-    @Test
-    public void is2AwayBlockSouthWest() {
-        //   |   |   |   |   |(F)
-        //   |   |   |   | O |
-        //   |   |   | O |   |
-        //   |   | O |   |   |
-        //   |   |   |   |   |
-        //   |   |   |   |   |
-        Board board = new Board(6, 6)
-                .withMove(new Move(OPPONENT, 2, 3))
-                .withMove(new Move(OPPONENT, 3, 2))
-                .withMove(new Move(OPPONENT, 4, 1));
-
-        Move move = new Move(FRIENDLY, 5, 0);
-        assertTrue(board.is2AwayBlock(move, 5));
-    }
-
-    @Test
-    public void is2AwayBlockNorthWest() {
-        //   |   |   |   |   |
-        //   |   |   |   |   |
-        //   |   | O |   |   |
-        //   |   |   | O |   |
-        //   |   |   |   | O |
-        //   |   |   |   |   | F
-        Board board = new Board(6, 6)
-                .withMove(new Move(OPPONENT, 2, 2))
-                .withMove(new Move(OPPONENT, 3, 3))
-                .withMove(new Move(OPPONENT, 4, 4));
-
-        Move move = new Move(FRIENDLY, 5, 5);
-        assertTrue(board.is2AwayBlock(move, 5));
-    }
-
-    @Test
-    public void is2AwayBlockSouthEast() {
-        //(F)|   |   |   |   |
-        //   | O |   |   |   |
-        //   |   | O |   |   |
-        //   |   |   | O |   |
-        //   |   |   |   |   |
-        //   |   |   |   |   |
-        Board board = new Board(6, 6)
-                .withMove(new Move(OPPONENT, 1, 1))
-                .withMove(new Move(OPPONENT, 2, 2))
-                .withMove(new Move(OPPONENT, 3, 3));
-
-        Move move = new Move(FRIENDLY, 0, 0);
-        assertTrue(board.is2AwayBlock(move, 5));
-    }
-
-    @Test
-    public void is2AwayBlockNorthAndSouth() {
-        //   |   |   |   |   |
-        //   |   |   | O |   |
-        //   |   |   |(F)|   |
-        //   |   |   | O |   |
-        //   |   |   | O |   |
-        //   |   |   |   |   |
-        Board board = new Board(6, 6)
-                .withMove(new Move(OPPONENT, 3, 1))
-                .withMove(new Move(OPPONENT, 3, 3))
-                .withMove(new Move(OPPONENT, 3, 4));
-
-        Move move = new Move(FRIENDLY, 3, 2);
-        assertTrue(board.is2AwayBlock(move, 5));
+    private Collection<Move> getMovesInDirection(Move move, Direction direction, Integer count) {
+        return IntStream
+                .range(1, count + 1)
+                .mapToObj(distance -> move.translate(direction, distance))
+                .collect(Collectors.toList());
     }
 
     @Test

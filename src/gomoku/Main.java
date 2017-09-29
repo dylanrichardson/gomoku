@@ -5,8 +5,8 @@ import java.util.Arrays;
 
 class Main {
 
-    private static final Integer WIN_LENGTH = 5;
-    private static final Integer BOARD_SIDE_LENGTH = 15;
+    static final Integer WIN_LENGTH = 5;
+    static final Integer BOARD_SIDE_LENGTH = 15;
     private static final String PLAYER_NAME = "bid";
 
     public static void main(String[] args) {

@@ -52,7 +52,7 @@ class Algorithm {
 
     Double evaluateMove(Move move, Board board, Integer winLength, Double alpha, Double beta, Double timeLimit) {
         long startTime = System.nanoTime();
-
+        // heuristic strategy
         if (board.isWin(move, winLength)) {
             return WIN_VALUE;
         }
@@ -71,7 +71,7 @@ class Algorithm {
         if (board.is2AwayBlock(move, winLength)) {
             return BLOCK_TWO_AWAY_WIN_VALUE;
         }
-
+        // minimax
         Board newBoard = board.withMove(move);
         return HEURISTIC_FACTOR *  getExtremeValue(move.getStone().getOpponent(), newBoard, winLength, alpha, beta, getTimeLeft(startTime, timeLimit));
     }
@@ -144,8 +144,8 @@ class Algorithm {
     // within 2 cells of stone
     private Boolean nearbyStone(Board board, Cell cell) {
         return Direction.all().anyMatch(dir ->
-                board.hasStoneInCell(cell.translate(dir))
-                || board.hasStoneInCell(cell.translate(dir, 2)));
+                board.isOccupiedCell(cell.translate(dir))
+                || board.isOccupiedCell(cell.translate(dir, 2)));
     }
 
     private Double getTimeLeft(Long startTime, Double timeLeft) {

@@ -1,7 +1,5 @@
 package gomoku;
 
-import com.sun.tools.javac.util.Pair;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -57,6 +55,10 @@ class Board {
         if (move != null)
             newCells[move.getColumn()][move.getRow()] = move.getStone();
         return new Board(width, height, newCells);
+    }
+
+    Board withMoves(Collection<Move> moves) {
+        return moves.stream().reduce(this, Board::withMove, (oldBoard, newBoard) -> newBoard);
     }
 
     Collection<Cell> getOpenCells() {
@@ -124,26 +126,27 @@ class Board {
         return height;
     }
 
-    Boolean hasStoneInCell(Cell cell) {
+    Boolean isOccupiedCell(Cell cell) {
         return getStoneInCell(cell) != null;
     }
 
     private Boolean is2AwayWinOnAxis(Move move, Integer winLength, Direction direction) {
-        return is2AwayWinInDirection(move, winLength, direction)
-                || is2AwayWinInDirection(move, winLength, direction.opposite());
+        int minLength = winLength - 2;
+        Integer countDir = countConsecutiveStones(move, minLength, direction);
+        Integer countOppDir = countConsecutiveStones(move, minLength, direction.opposite());
+        return     (countDir >= minLength
+                && isEmptyCell(move.getCell().translate(direction, minLength + 1))
+                && isEmptyCell(move.getCell().translate(direction, minLength + 2)))
+                || (countOppDir >= minLength
+                && isEmptyCell(move.getCell().translate(direction.opposite(), minLength + 1))
+                && isEmptyCell(move.getCell().translate(direction.opposite(), minLength + 2)))
+                || (countOppDir + countDir >= minLength
+                && isEmptyCell(move.getCell().translate(direction, countDir + 1))
+                && isEmptyCell(move.getCell().translate(direction.opposite(), countOppDir + 1)));
     }
 
-    private Boolean is2AwayWinInDirection(Move move, Integer winLength, Direction direction) {
-        int oppLength = winLength - 2;
-        Cell endCell = move.getCell().translate(direction, winLength);
-        if (isWithinBounds(endCell)) {
-            Integer countInDir = countConsecutiveStones(move, oppLength, direction);
-            if (countInDir >= oppLength) {
-                return !hasStoneInCell(endCell)
-                        && !hasStoneInCell(move.getCell().translate(direction, winLength - 1));
-            }
-        }
-        return false;
+    private Boolean isEmptyCell(Cell cell) {
+        return isWithinBounds(cell) && !isOccupiedCell(cell);
     }
 
     private Boolean isWithinBounds(Cell cell) {
@@ -155,7 +158,8 @@ class Board {
         if (length == 1)
             return 0;
         for (int count = 1; count < length; count++) {
-            if (getStoneInCell(move.getCell().translate(direction, count)) != move.getStone()) {
+            Stone stone = getStoneInCell(move.getCell().translate(direction, count));
+            if (stone != move.getStone()) {
                 return count - 1;
             }
         }
