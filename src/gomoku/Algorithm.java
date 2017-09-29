@@ -136,16 +136,16 @@ class Algorithm {
         return board
                 .getOpenCells()
                 .stream()
-                .filter(cell -> nearbyStone(board, cell.fst, cell.snd))
-                .map(cell -> new Move(stone, cell.fst, cell.snd))
+                .filter(cell -> nearbyStone(board, cell))
+                .map(cell -> new Move(stone, cell))
                 .collect(Collectors.toList());
     }
 
     // within 2 cells of stone
-    private Boolean nearbyStone(Board board, Integer col, Integer row) {
+    private Boolean nearbyStone(Board board, Cell cell) {
         return Direction.all().anyMatch(dir ->
-                board.hasStoneInCell(col + dir.dCol, row + dir.dRow)
-                || board.hasStoneInCell(col + 2 * dir.dCol, row + 2 * dir.dRow));
+                board.hasStoneInCell(cell.translate(dir))
+                || board.hasStoneInCell(cell.translate(dir, 2)));
     }
 
     private Double getTimeLeft(Long startTime, Double timeLeft) {

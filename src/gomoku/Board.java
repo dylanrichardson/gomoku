@@ -59,24 +59,24 @@ class Board {
         return new Board(width, height, newCells);
     }
 
-    Collection<Pair<Integer, Integer>> getOpenCells() {
-        List<Pair<Integer, Integer>> openCells = new ArrayList<>();
+    Collection<Cell> getOpenCells() {
+        List<Cell> openCells = new ArrayList<>();
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
                 if (cells[col][row] == null) {
-                    openCells.add(new Pair<>(col, row));
+                    openCells.add(new Cell(col, row));
                 }
             }
         }
         return openCells;
     }
 
-    Stone getStoneInCell(Integer column, Integer row) {
-        return (column >= 0 && column < width && row >= 0 && row < height) ? cells[column][row] : null;
+    Stone getStoneInCell(Cell cell) {
+        return isWithinBounds(cell) ? cells[cell.getColumn()][cell.getRow()] : null;
     }
 
     Boolean isValidMove(Move move) {
-        return move != null && isWithinBounds(move.getColumn(), move.getRow());
+        return move != null && isWithinBounds(move.getCell());
     }
 
     Boolean isDraw() {
@@ -84,10 +84,10 @@ class Board {
     }
 
     Boolean isWin(Move move, Integer winLength) {
-        return Direction.semiCircle().anyMatch(dir -> isWinInDirection(move, winLength, dir));
+        return Direction.semiCircle().anyMatch(dir -> isWinOnAxis(move, winLength, dir));
     }
 
-    private Boolean isWinInDirection(Move move, Integer winLength, Direction direction) {
+    private Boolean isWinOnAxis(Move move, Integer winLength, Direction direction) {
         return countConsecutiveStones(move, winLength, direction)
                 + countConsecutiveStones(move, winLength, direction.opposite())
                 >= winLength - 1;
@@ -98,7 +98,7 @@ class Board {
     }
 
     Boolean is2AwayWin(Move move, Integer winLength) {
-        return Direction.semiCircle().anyMatch(dir -> is2AwayWinInDirection(move, winLength, dir));
+        return Direction.semiCircle().anyMatch(dir -> is2AwayWinOnAxis(move, winLength, dir));
     }
 
     Boolean is2AwayBlock(Move move, Integer winLength) {
@@ -124,36 +124,38 @@ class Board {
         return height;
     }
 
-    Boolean hasStoneInCell(Integer col, Integer row) {
-        return getStoneInCell(col, row) != null;
+    Boolean hasStoneInCell(Cell cell) {
+        return getStoneInCell(cell) != null;
+    }
+
+    private Boolean is2AwayWinOnAxis(Move move, Integer winLength, Direction direction) {
+        return is2AwayWinInDirection(move, winLength, direction)
+                || is2AwayWinInDirection(move, winLength, direction.opposite());
     }
 
     private Boolean is2AwayWinInDirection(Move move, Integer winLength, Direction direction) {
-        int col = move.getColumn() + winLength * direction.dCol;
-        int row = move.getRow() + winLength * direction.dRow;
         int oppLength = winLength - 2;
-        if (isWithinBounds(col, row)) {
+        Cell endCell = move.getCell().translate(direction, winLength);
+        if (isWithinBounds(endCell)) {
             Integer countInDir = countConsecutiveStones(move, oppLength, direction);
-            Integer countInOppDir = countConsecutiveStones(move, oppLength, direction.opposite());
             if (countInDir >= oppLength) {
-                return !hasStoneInCell(col, row) && !hasStoneInCell(col - direction.dCol, row - direction.dRow);
+                return !hasStoneInCell(endCell)
+                        && !hasStoneInCell(move.getCell().translate(direction, winLength - 1));
             }
         }
         return false;
     }
 
-    private Boolean isWithinBounds(Integer col, Integer row) {
-        return     0 <= col && col < width
-                && 0 <= row && row < height;
+    private Boolean isWithinBounds(Cell cell) {
+        return     0 <= cell.getColumn() && cell.getColumn() < width
+                && 0 <= cell.getRow() && cell.getRow() < height;
     }
 
     private Integer countConsecutiveStones(Move move, Integer length, Direction direction) {
         if (length == 1)
             return 0;
         for (int count = 1; count < length; count++) {
-            int newCol = move.getColumn() + direction.dCol * count;
-            int newRow = move.getRow() + direction.dRow * count;
-            if (getStoneInCell(newCol, newRow) != move.getStone()) {
+            if (getStoneInCell(move.getCell().translate(direction, count)) != move.getStone()) {
                 return count - 1;
             }
         }

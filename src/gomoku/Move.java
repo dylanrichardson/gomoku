@@ -1,13 +1,12 @@
 package gomoku;
 
-import static gomoku.Board.*;
-import static gomoku.Stone.FRIENDLY;
+import static gomoku.Board.convertColumn;
+import static gomoku.Board.convertRow;
 
 class Move {
 
     private final Stone stone;
-    private final Integer column;
-    private final Integer row;
+    private Cell cell;
 
     // when parsed
     Move(Stone stone, Character column, Integer row) {
@@ -16,22 +15,25 @@ class Move {
 
     // internal representation
     Move(Stone stone, Integer column, Integer row) {
+        this(stone, new Cell(column, row));
+    }
+
+    Move(Stone stone, Cell cell) {
         this.stone = stone;
-        this.column = column;
-        this.row = row;
+        this.cell = cell;
     }
 
     @Override
     public String toString() {
-        return ((stone == FRIENDLY) ? "F" : "O") + " " + getCell();
+        return stone + " " + cell;
     }
 
-    String getCell() {
-        return printColumn(column) + " " + printRow(row);
+    Cell getCell() {
+        return cell;
     }
 
     Integer getColumn() {
-        return column;
+        return cell.getColumn();
     }
 
     Stone getStone() {
@@ -39,7 +41,21 @@ class Move {
     }
 
     Integer getRow() {
-        return row;
+        return cell.getRow();
+    }
+
+
+
+    Move forOpponent() {
+        return new Move(stone.getOpponent(), getColumn(), getRow());
+    }
+
+    Move translate(Direction direction, Integer distance) {
+        return new Move(stone, cell.translate(direction, distance));
+    }
+
+    Move translate(Direction direction) {
+        return translate(direction, 1);
     }
 
     @Override
@@ -49,24 +65,13 @@ class Move {
 
         Move move = (Move) o;
 
-        return stone == move.stone
-                && (column != null ? column.equals(move.column) : move.column == null)
-                && (row != null ? row.equals(move.row) : move.row == null);
+        return stone == move.stone && (cell != null ? cell.equals(move.cell) : move.cell == null);
     }
 
     @Override
     public int hashCode() {
         int result = stone != null ? stone.hashCode() : 0;
-        result = 31 * result + (column != null ? column.hashCode() : 0);
-        result = 31 * result + (row != null ? row.hashCode() : 0);
+        result = 31 * result + (cell != null ? cell.hashCode() : 0);
         return result;
-    }
-
-    Move forOpponent() {
-        return new Move(stone.getOpponent(), column, row);
-    }
-
-    Move translate(Direction direction) {
-        return new Move(stone, column + direction.dCol, row + direction.dRow);
     }
 }

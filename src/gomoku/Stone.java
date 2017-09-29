@@ -11,4 +11,9 @@ enum Stone {
             default: return null;
         }
     }
+
+    @Override
+    public String toString() {
+        return (this == FRIENDLY) ? "F" : "O";
+    }
 }

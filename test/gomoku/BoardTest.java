@@ -19,14 +19,14 @@ public class BoardTest {
     public void withMove3x3() {
         Board board = new Board(3, 3)
                 .withMove(new Move(FRIENDLY, 0, 0));
-        assertEquals(FRIENDLY, board.getStoneInCell(0, 0));
+        assertEquals(FRIENDLY, board.getStoneInCell(new Cell(0, 0)));
     }
     @Test
     public void withMoveNoMutation3x3() {
         Board board1 = new Board(3, 3)
                 .withMove(new Move(FRIENDLY, 0, 0));
         board1.withMove(new Move(OPPONENT, 0, 0));
-        assertEquals(FRIENDLY, board1.getStoneInCell(0, 0));
+        assertEquals(FRIENDLY, board1.getStoneInCell(new Cell(0, 0)));
     }
 
     @Test
@@ -34,7 +34,7 @@ public class BoardTest {
         Board board = new Board(3, 3)
                 .withMove(new Move(FRIENDLY, 0, 0))
                 .withMove(new Move(OPPONENT, 0, 0));
-        assertEquals(OPPONENT, board.getStoneInCell(0, 0));
+        assertEquals(OPPONENT, board.getStoneInCell(new Cell(0, 0)));
     }
 
     // getOpenCells
@@ -43,15 +43,15 @@ public class BoardTest {
     public void getOpenCells3x3() {
         Board board = new Board(3, 3)
                 .withMove(new Move(FRIENDLY, 0, 0));
-        Set<Pair<Integer, Integer>> openCells = new HashSet<>(Arrays.asList(
-                new Pair<>(0,1),
-                new Pair<>(0,2),
-                new Pair<>(1,0),
-                new Pair<>(1,1),
-                new Pair<>(1,2),
-                new Pair<>(2,0),
-                new Pair<>(2,1),
-                new Pair<>(2,2)));
+        Set<Cell> openCells = new HashSet<>(Arrays.asList(
+                new Cell(0,1),
+                new Cell(0,2),
+                new Cell(1,0),
+                new Cell(1,1),
+                new Cell(1,2),
+                new Cell(2,0),
+                new Cell(2,1),
+                new Cell(2,2)));
 
         assertEquals(openCells,new HashSet<>(board.getOpenCells()));
     }
