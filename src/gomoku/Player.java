@@ -38,6 +38,11 @@ class Player {
         // TODO handle special 2nd move of game
         Long startTime = System.currentTimeMillis();
         int round = 0;
+
+
+        if (makeFirstMove())
+            return getResult((System.currentTimeMillis() - startTime)  / 1000);
+
         while (true) {
             Debug.print("\n\nROUND - " + round++ + " " + (System.currentTimeMillis() - startTime) / 1000 + "s\n\n");
             Debug.print("Waiting...");
@@ -50,6 +55,22 @@ class Player {
         }
     }
 
+    // return true if game is over
+    private Boolean makeFirstMove() {
+        gameCommunication.waitForTurn();
+        readMove();
+        if (gameCommunication.isOver()) {
+            return true;
+        }
+        if (moves.isEmpty()) {
+            applyMove(new Move(FRIENDLY, board.getWidth() / 2, board.getHeight() / 2));
+        } else {
+            Move oppMove = moves.get(0);
+            applyMove(new Move(FRIENDLY, oppMove.getColumn(), oppMove.getRow()));
+        }
+        return false;
+    }
+
     private void readMove() {
         Move move = gameCommunication.readMove();
         if (board.isValidMove(move) && !isRepeat(move)) {
@@ -59,13 +80,17 @@ class Player {
     }
 
     private Boolean isRepeat(Move move) {
-        return moves.size() > 0 && moves.get(moves.size() - 1).getCell().equals(move.getCell());
+        return false;//moves.size() > 0 && moves.get(moves.size() - 1).getCell().equals(move.getCell());
     }
 
     private void makeMove() {
         Debug.print(board);
         Debug.print("Choosing move...");
         Move move = algorithm.chooseMove(FRIENDLY, board, winLength, timeLimit);
+        applyMove(move);
+    }
+
+    private void applyMove(Move move) {
         moves.add(move);
         board = board.withMove(move);
         gameCommunication.writeMove(move);

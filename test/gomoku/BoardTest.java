@@ -4,7 +4,6 @@ import com.sun.tools.javac.util.Pair;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -96,10 +95,10 @@ public class BoardTest {
         assertEquals(boardString, board.toString());
     }
 
-    // willBeWin
+    // isWin
 
     @Test
-    public void willBeWinWin4West() {
+    public void isWinWest() {
         // F | F | F | F |(F)| ...
         //   |   |   |   |   | ...
         // ...
@@ -109,11 +108,11 @@ public class BoardTest {
                 .withMove(new Move(FRIENDLY, 2, 0))
                 .withMove(new Move(FRIENDLY, 3, 0));
 
-        assertTrue(board.willBeWin(new Move(FRIENDLY,4, 0), 5));
+        assertTrue(board.isWin(new Move(FRIENDLY,4, 0), 5));
     }
 
     @Test
-    public void willBeWinWin4East() {
+    public void isWinEast() {
         //(F)| F | F | F | F | ...
         //   |   |   |   |   | ...
         // ...
@@ -123,11 +122,11 @@ public class BoardTest {
                 .withMove(new Move(FRIENDLY, 3, 0))
                 .withMove(new Move(FRIENDLY, 4, 0));
 
-        assertTrue(board.willBeWin(new Move(FRIENDLY,0, 0), 5));
+        assertTrue(board.isWin(new Move(FRIENDLY,0, 0), 5));
     }
 
     @Test
-    public void willBeWinWin3West1East() {
+    public void isWin3West1East() {
         // F | F | F |(F)| F | ...
         //   |   |   |   |   | ...
         // ...
@@ -137,11 +136,11 @@ public class BoardTest {
                 .withMove(new Move(FRIENDLY, 2, 0))
                 .withMove(new Move(FRIENDLY, 4, 0));
 
-        assertTrue(board.willBeWin(new Move(FRIENDLY,3, 0), 5));
+        assertTrue(board.isWin(new Move(FRIENDLY,3, 0), 5));
     }
 
     @Test
-    public void willBeWinWin2West2East() {
+    public void isWin2West2East() {
         // F | F |(F)| F | F | ...
         //   |   |   |   |   | ...
         // ...
@@ -151,11 +150,11 @@ public class BoardTest {
                 .withMove(new Move(FRIENDLY, 3, 0))
                 .withMove(new Move(FRIENDLY, 4, 0));
 
-        assertTrue(board.willBeWin(new Move(FRIENDLY,2, 0), 5));
+        assertTrue(board.isWin(new Move(FRIENDLY,2, 0), 5));
     }
 
     @Test
-    public void willBeWinWin4North() {
+    public void isWinNorth() {
         // F |   | ...
         // F |   | ...
         // F |   | ...
@@ -168,11 +167,11 @@ public class BoardTest {
                 .withMove(new Move(FRIENDLY, 0, 2))
                 .withMove(new Move(FRIENDLY, 0, 3));
 
-        assertTrue(board.willBeWin(new Move(FRIENDLY,0, 4), 5));
+        assertTrue(board.isWin(new Move(FRIENDLY,0, 4), 5));
     }
 
     @Test
-    public void willBeWinWin4South() {
+    public void isWinSouth() {
         //(F)|   | ...
         // F |   | ...
         // F |   | ...
@@ -185,11 +184,11 @@ public class BoardTest {
                 .withMove(new Move(FRIENDLY, 0, 3))
                 .withMove(new Move(FRIENDLY, 0, 4));
 
-        assertTrue(board.willBeWin(new Move(FRIENDLY,0, 0), 5));
+        assertTrue(board.isWin(new Move(FRIENDLY,0, 0), 5));
     }
 
     @Test
-    public void willBeWinWin2North2South() {
+    public void isWin2North2South() {
         // F |   | ...
         // F |   | ...
         //(F)|   | ...
@@ -202,11 +201,11 @@ public class BoardTest {
                 .withMove(new Move(FRIENDLY, 0, 3))
                 .withMove(new Move(FRIENDLY, 0, 4));
 
-        assertTrue(board.willBeWin(new Move(FRIENDLY,0, 2), 5));
+        assertTrue(board.isWin(new Move(FRIENDLY,0, 2), 5));
     }
 
     @Test
-    public void willBeWinWin4NorthEast() {
+    public void isWinNorthEast() {
         //   |   |   |   | F | ...
         //   |   |   | F |   |   ...
         //   |   | F |   |   |   ...
@@ -218,11 +217,11 @@ public class BoardTest {
                 .withMove(new Move(FRIENDLY, 2, 2))
                 .withMove(new Move(FRIENDLY, 1, 3));
 
-        assertTrue(board.willBeWin(new Move(FRIENDLY,0, 4), 5));
+        assertTrue(board.isWin(new Move(FRIENDLY,0, 4), 5));
     }
 
     @Test
-    public void willBeWinWin4SouthWest() {
+    public void isWinSouthWest() {
         //   |   |   |   |(F)| ...
         //   |   |   | F |   |   ...
         //   |   | F |   |   |   ...
@@ -234,11 +233,11 @@ public class BoardTest {
                 .withMove(new Move(FRIENDLY, 1, 3))
                 .withMove(new Move(FRIENDLY, 0, 4));
 
-        assertTrue(board.willBeWin(new Move(FRIENDLY,4, 0), 5));
+        assertTrue(board.isWin(new Move(FRIENDLY,4, 0), 5));
     }
 
     @Test
-    public void willBeWinWin2NorthEast2SouthWest() {
+    public void isWin2NorthEast2SouthWest() {
         //   |   |   |   | F | ...
         //   |   |   | F |   |   ...
         //   |   |(F)|   |   |   ...
@@ -250,11 +249,11 @@ public class BoardTest {
                 .withMove(new Move(FRIENDLY, 1, 3))
                 .withMove(new Move(FRIENDLY, 0, 4));
 
-        assertTrue(board.willBeWin(new Move(FRIENDLY,2, 2), 5));
+        assertTrue(board.isWin(new Move(FRIENDLY,2, 2), 5));
     }
 
     @Test
-    public void willBeWinWin4NorthWest() {
+    public void isWinNorthWest() {
         // F |   |   |   |   | ...
         //   | F |   |   |   |   ...
         //   |   | F |   |   |   ...
@@ -266,11 +265,11 @@ public class BoardTest {
                 .withMove(new Move(FRIENDLY, 2, 2))
                 .withMove(new Move(FRIENDLY, 3, 3));
 
-        assertTrue(board.willBeWin(new Move(FRIENDLY,4, 4), 5));
+        assertTrue(board.isWin(new Move(FRIENDLY,4, 4), 5));
     }
 
     @Test
-    public void willBeWinWin4SouthEast() {
+    public void isWinSouthEast() {
         //(F)|   |   |   |   | ...
         //   | F |   |   |   |   ...
         //   |   | F |   |   |   ...
@@ -282,11 +281,11 @@ public class BoardTest {
                 .withMove(new Move(FRIENDLY, 3, 3))
                 .withMove(new Move(FRIENDLY, 4, 4));
 
-        assertTrue(board.willBeWin(new Move(FRIENDLY,0, 0), 5));
+        assertTrue(board.isWin(new Move(FRIENDLY,0, 0), 5));
     }
 
     @Test
-    public void willBeWinFalse() {
+    public void isWinFalse() {
         // F | F | F |(F)| ...
         //   |   |   |   | ...
         // ...
@@ -295,11 +294,11 @@ public class BoardTest {
                 .withMove(new Move(FRIENDLY, 1, 0))
                 .withMove(new Move(FRIENDLY, 2, 0));
 
-        assertFalse(board.willBeWin(new Move(FRIENDLY,3, 0), 5));
+        assertFalse(board.isWin(new Move(FRIENDLY,3, 0), 5));
     }
 
     @Test
-    public void willBeBlockIn2MovesEast() {
+    public void is2AwayBlockEast() {
         //   |   |   |   |   |
         //(F)| O | O | O |   |
         //   |   |   |   |   |
@@ -309,11 +308,11 @@ public class BoardTest {
                 .withMove(new Move(OPPONENT, 3, 1));
 
         Move move = new Move(FRIENDLY, 0, 1);
-        assertTrue(board.willBeBlockIn2Moves(move, 5));
+        assertTrue(board.is2AwayBlock(move, 5));
     }
 
     @Test
-    public void willBeBlockIn2MovesWest() {
+    public void is2AwayBlockWest() {
         //   |   |   |   |   |
         //   |   | O | O | O |(F)
         //   |   |   |   |   |
@@ -323,11 +322,11 @@ public class BoardTest {
                 .withMove(new Move(OPPONENT, 4, 1));
 
         Move move = new Move(FRIENDLY, 5, 1);
-        assertTrue(board.willBeBlockIn2Moves(move, 5));
+        assertTrue(board.is2AwayBlock(move, 5));
     }
 
     @Test
-    public void willBeBlockIn2MovesNorth() {
+    public void is2AwayBlockNorth() {
         //   |   |
         //   |   |
         //   | O |
@@ -340,11 +339,11 @@ public class BoardTest {
                 .withMove(new Move(OPPONENT, 1, 4));
 
         Move move = new Move(FRIENDLY, 1, 5);
-        assertTrue(board.willBeBlockIn2Moves(move, 5));
+        assertTrue(board.is2AwayBlock(move, 5));
     }
 
     @Test
-    public void willBeBlockIn2MovesSouth() {
+    public void is2AwayBlockSouth() {
         //   |(F)|
         //   | O |
         //   | O |
@@ -357,11 +356,11 @@ public class BoardTest {
                 .withMove(new Move(OPPONENT, 1, 3));
 
         Move move = new Move(FRIENDLY, 1, 0);
-        assertTrue(board.willBeBlockIn2Moves(move, 5));
+        assertTrue(board.is2AwayBlock(move, 5));
     }
 
     @Test
-    public void willBeBlockIn2MovesNorthEast() {
+    public void is2AwayBlockNorthEast() {
         //   |   |   |   |   |
         //   |   |   |   |   |
         //   |   |   | O |   |
@@ -374,11 +373,11 @@ public class BoardTest {
                 .withMove(new Move(OPPONENT, 3, 2));
 
         Move move = new Move(FRIENDLY, 0, 5);
-        assertTrue(board.willBeBlockIn2Moves(move, 5));
+        assertTrue(board.is2AwayBlock(move, 5));
     }
 
     @Test
-    public void willBeBlockIn2MovesSouthWest() {
+    public void is2AwayBlockSouthWest() {
         //   |   |   |   |   |(F)
         //   |   |   |   | O |
         //   |   |   | O |   |
@@ -391,11 +390,11 @@ public class BoardTest {
                 .withMove(new Move(OPPONENT, 4, 1));
 
         Move move = new Move(FRIENDLY, 5, 0);
-        assertTrue(board.willBeBlockIn2Moves(move, 5));
+        assertTrue(board.is2AwayBlock(move, 5));
     }
 
     @Test
-    public void willBeBlockIn2MovesNorthWest() {
+    public void is2AwayBlockNorthWest() {
         //   |   |   |   |   |
         //   |   |   |   |   |
         //   |   | O |   |   |
@@ -408,11 +407,11 @@ public class BoardTest {
                 .withMove(new Move(OPPONENT, 4, 4));
 
         Move move = new Move(FRIENDLY, 5, 5);
-        assertTrue(board.willBeBlockIn2Moves(move, 5));
+        assertTrue(board.is2AwayBlock(move, 5));
     }
 
     @Test
-    public void willBeBlockIn2MovesSouthEast() {
+    public void is2AwayBlockSouthEast() {
         //(F)|   |   |   |   |
         //   | O |   |   |   |
         //   |   | O |   |   |
@@ -425,21 +424,34 @@ public class BoardTest {
                 .withMove(new Move(OPPONENT, 3, 3));
 
         Move move = new Move(FRIENDLY, 0, 0);
-        assertTrue(board.willBeBlockIn2Moves(move, 5));
+        assertTrue(board.is2AwayBlock(move, 5));
     }
 
-    // intersection of 2 2-away wins
-    // opponent move would produce 2 ways to win
+    @Test
+    public void is2AwayBlockNorthAndSouth() {
+        //   |   |   |   |   |
+        //   |   |   | O |   |
+        //   |   |   |(F)|   |
+        //   |   |   | O |   |
+        //   |   |   | O |   |
+        //   |   |   |   |   |
+        Board board = new Board(6, 6)
+                .withMove(new Move(OPPONENT, 3, 1))
+                .withMove(new Move(OPPONENT, 3, 3))
+                .withMove(new Move(OPPONENT, 3, 4));
+
+        Move move = new Move(FRIENDLY, 3, 2);
+        assertTrue(board.is2AwayBlock(move, 5));
+    }
 
     @Test
-    public void willBeComboBlockWestAndSouth() {
-
-        //   |   |   |
-        // O | O | O |(F)
-        //   |   |   | O
-        //   |   |   | O
-        //   |   |   | O
-        Board board = new Board(4, 5)
+    public void isComboBlockWestAndSouth() {
+        //   |   |   |   |
+        // O | O | O |(F)|
+        //   |   |   | O |
+        //   |   |   | O |
+        //   |   |   | O |
+        Board board = new Board(5, 5)
                 .withMove(new Move(OPPONENT, 0, 1))
                 .withMove(new Move(OPPONENT, 1, 1))
                 .withMove(new Move(OPPONENT, 2, 1))
@@ -448,7 +460,26 @@ public class BoardTest {
                 .withMove(new Move(OPPONENT, 3, 4));
 
         Move move = new Move(FRIENDLY, 3, 1);
-        assertTrue(board.willBeComboBlock(move, 5));
+        assertTrue(board.isComboBlock(move, 5));
+    }
+
+    @Test
+    public void isComboBlockWestAndSouth2() {
+        // O | O | O |(F)|
+        //   |   |   |   |
+        //   |   |   | O |
+        //   |   |   | O |
+        //   |   |   | O |
+        Board board = new Board(5, 5)
+                .withMove(new Move(OPPONENT, 0, 0))
+                .withMove(new Move(OPPONENT, 1, 0))
+                .withMove(new Move(OPPONENT, 2, 0))
+                .withMove(new Move(OPPONENT, 3, 2))
+                .withMove(new Move(OPPONENT, 3, 3))
+                .withMove(new Move(OPPONENT, 3, 4));
+
+        Move move = new Move(FRIENDLY, 3, 0);
+        assertTrue(board.isComboBlock(move, 5));
     }
 
 }

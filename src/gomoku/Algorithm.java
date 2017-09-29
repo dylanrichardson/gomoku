@@ -5,16 +5,17 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static gomoku.Stone.FRIENDLY;
-import static java.util.Collections.reverse;
 
 
 class Algorithm {
 
     private static final Double WIN_VALUE = 1.0;
-    private static final Double BLOCK_WIN_VALUE = 0.5;
-    private static final Double BLOCK_2ND_WIN_VALUE = 0.25;
+    private static final Double BLOCK_WIN_VALUE = 0.9;
+    private static final Double COMBO_WIN_VALUE = 0.8;
+    private static final Double BLOCK_COMBO_WIN_VALUE = 0.7;
+    private static final Double TWO_AWAY_WIN_VALUE = 0.6;
+    private static final Double BLOCK_TWO_AWAY_WIN_VALUE = 0.5;
     private static final Double HEURISTIC_FACTOR = 0.2;
-    private static final Double COMBO_BLOCK_VALUE = 0.1;
     private static final Double DRAW_VALUE = 0.0;
 
     private static final RuntimeException NO_MOVES_LEFT = new RuntimeException("No moves left to make");
@@ -34,8 +35,7 @@ class Algorithm {
             Move move = moves.get(i);
             Debug.debug(move);
             Double score = evaluateMove(move, board, winLength, -1 * WIN_VALUE, WIN_VALUE,newTimeLimit);
-            Debug.debug(move);
-            Debug.debug(score);
+
             if (score >= bestScore) {
                 bestScore = score;
                 bestMove = move;
@@ -53,21 +53,23 @@ class Algorithm {
     Double evaluateMove(Move move, Board board, Integer winLength, Double alpha, Double beta, Double timeLimit) {
         long startTime = System.nanoTime();
 
-        // check if win
-        if (board.willBeWin(move, winLength)) {
+        if (board.isWin(move, winLength)) {
             return WIN_VALUE;
         }
-        // check if block
-        if (board.willBeBlock(move, winLength)) {
+        if (board.isBlock(move, winLength)) {
             return BLOCK_WIN_VALUE;
         }
-        // check if 2-away block
-        if (board.willBeBlockIn2Moves(move, winLength)) {
-            return BLOCK_2ND_WIN_VALUE;
+        if (board.isComboWin(move, winLength)) {
+            return BLOCK_COMBO_WIN_VALUE;
         }
-        // check combo of 2-away blocks
-        if (board.willBeComboBlock(move, winLength)) {
-            return COMBO_BLOCK_VALUE;
+        if (board.isComboBlock(move, winLength)) {
+            return BLOCK_COMBO_WIN_VALUE;
+        }
+        if (board.is2AwayWin(move, winLength)) {
+            return TWO_AWAY_WIN_VALUE;
+        }
+        if (board.is2AwayBlock(move, winLength)) {
+            return BLOCK_TWO_AWAY_WIN_VALUE;
         }
 
         Board newBoard = board.withMove(move);
@@ -98,8 +100,7 @@ class Algorithm {
             Move move = moves.get(i);
             // recurse in minimax
             Double score = mod * evaluateMove(move, board, winLength, alpha, beta, newTimeLimit);
-            Debug.print(move);
-            Debug.print(score);
+
             if (score >= extremeScore) {
                 extremeScore = score;
                 extremeMove = move;
@@ -107,20 +108,17 @@ class Algorithm {
                     break;
                 }
             }
+
             if(isFriendly) {
                 if (score > alpha) {
                     alpha = score;
                 }
-            }
-            else
-            if(score < beta){
+            } else if(score < beta) {
                 beta = score;
             }
             if (alpha > beta){
-                prune();
-                break;
+                break; // prune
             }
-
         }
 
         if (extremeMove == null)
@@ -128,11 +126,8 @@ class Algorithm {
         return extremeScore * mod;
     }
 
-     void prune() {
-        Debug.print("prune");
-    }
-
     Double getHeuristic(Board board, Move move) {
+        // TODO
         return DRAW_VALUE;
     }
 
@@ -141,8 +136,16 @@ class Algorithm {
         return board
                 .getOpenCells()
                 .stream()
+                .filter(cell -> nearbyStone(board, cell.fst, cell.snd))
                 .map(cell -> new Move(stone, cell.fst, cell.snd))
                 .collect(Collectors.toList());
+    }
+
+    // within 2 cells of stone
+    private Boolean nearbyStone(Board board, Integer col, Integer row) {
+        return Direction.all().anyMatch(dir ->
+                board.hasStoneInCell(col + dir.dCol, row + dir.dRow)
+                || board.hasStoneInCell(col + 2 * dir.dCol, row + 2 * dir.dRow));
     }
 
     private Double getTimeLeft(Long startTime, Double timeLeft) {

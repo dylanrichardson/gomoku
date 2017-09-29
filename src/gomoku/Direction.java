@@ -34,10 +34,10 @@ enum Direction {
     }
 
     static Stream<Direction> all() {
-        return Stream.concat(semiCircle(), semiCircle().map(Direction::flip));
+        return Stream.concat(semiCircle(), semiCircle().map(Direction::opposite));
     }
 
-    Direction flip() {
+    Direction opposite() {
         return map.get(new Pair<>(dCol * -1, dRow * -1));
     }
 

@@ -14,7 +14,7 @@ public class AlgorithmTest {
 
     private static final Double TIME_LIMIT = 1.0 * 1000000000; // 1 sec
 
-    private final TestAlgorithm algorithm = new TestAlgorithm();
+    private final Algorithm algorithm = new Algorithm();
 
     // evaluateMove
 
@@ -145,7 +145,8 @@ public class AlgorithmTest {
 
     @Test
     public void chooseMoveInTimeLimit() {
-        Board board = new Board(15, 15);
+        Board board = new Board(15, 15)
+                .withMove(new Move(OPPONENT, 0 , 0));
 
         Long startTime = System.nanoTime();
         algorithm.chooseMove(FRIENDLY, board, 5, TIME_LIMIT);
@@ -156,6 +157,7 @@ public class AlgorithmTest {
 
     @Test
     public void evaluateMoveInTimeLimit() {
+//        Debug.print = true;
         Board board = new Board(15, 15);
         Move move = new Move(FRIENDLY, 0, 0);
 
@@ -260,77 +262,32 @@ public class AlgorithmTest {
                 .withMove(new Move(OPPONENT, 1, 1))
                 .withMove(new Move(OPPONENT, 2, 1));
 
-        Move move = new Move(FRIENDLY, 0, 1);
+        Move move = new Move(FRIENDLY, 3, 1);
 
         assertEquals(move, algorithm.chooseMove(FRIENDLY, board, 4, TIME_LIMIT));
-    }
-
-    @Test
-    public void alphabeta(){
-        //   |   |(F)
-        // F | O |
-        // F | O | O
-
-        Board board = new Board(3, 3)
-                .withMove(new Move(FRIENDLY, 0, 1))
-                .withMove(new Move(OPPONENT, 1, 1))
-                .withMove(new Move(FRIENDLY, 0, 2))
-                .withMove(new Move(OPPONENT, 1, 2))
-                .withMove(new Move(OPPONENT, 2, 2));
-
-        //Move move = new Move(FRIENDLY, 2, 0);
-        algorithm.chooseMove(FRIENDLY,board,3, TIME_LIMIT * 10);
-
-        assertEquals(6, algorithm.prunes);
-    }
-    @Test
-    public void alphabeta2(){
-        //   |   | O
-        // F | O | O
-        //   |   | F
-        Board board = new Board(3, 3)
-                .withMove(new Move(FRIENDLY, 0, 1))
-                .withMove(new Move(OPPONENT, 1, 1))
-                .withMove(new Move(FRIENDLY, 2, 2))
-                .withMove(new Move(OPPONENT, 2, 0))
-                .withMove(new Move(OPPONENT, 2, 1));
-
-        //Move move = new Move(FRIENDLY, 2, 0);
-        algorithm.chooseMove(FRIENDLY,board,3, TIME_LIMIT * 100000);
-
-        assertEquals(6, algorithm.prunes);
-    }
-    private class TestAlgorithm extends Algorithm {
-        private int prunes = 0;
-
-        @Override void prune(){
-            super.prune();
-            prunes++;
-        }
     }
 
     // intersection of 2 2-away wins
     // opponent move would produce 2 ways to win
 
-//    @Test
-//    public void chooseMoveBlockCombo() {
-//        Debug.on();
-//        //   |   |   |   |
-//        // O | O | O |(F)|
-//        //   |   |   | O |
-//        //   |   |   | O |
-//        //   |   |   | O |
-//        Board board = new Board(4, 5)
-//                .withMove(new Move(OPPONENT, 0, 1))
-//                .withMove(new Move(OPPONENT, 1, 1))
-//                .withMove(new Move(OPPONENT, 2, 1))
-//                .withMove(new Move(OPPONENT, 3, 2))
-//                .withMove(new Move(OPPONENT, 3, 3))
-//                .withMove(new Move(OPPONENT, 3, 4));
-//
-//        Move move = new Move(FRIENDLY, 3, 1);
-//        assertEquals(move, algorithm.chooseMove(FRIENDLY, board, 5, TIME_LIMIT));
-//    }
+    @Test
+    public void chooseMoveBlockCombo() {
+        //   |   |   |   |
+        // O | O | O |(F)|
+        //   |   |   | O |
+        //   |   |   | O |
+        //   |   |   | O |
+        Board board = new Board(4, 5)
+                .withMove(new Move(OPPONENT, 0, 1))
+                .withMove(new Move(OPPONENT, 1, 1))
+                .withMove(new Move(OPPONENT, 2, 1))
+                .withMove(new Move(OPPONENT, 3, 2))
+                .withMove(new Move(OPPONENT, 3, 3))
+                .withMove(new Move(OPPONENT, 3, 4));
+
+        Move move = new Move(FRIENDLY, 3, 1);
+        assertEquals(move, algorithm.chooseMove(FRIENDLY, board, 5, TIME_LIMIT));
+    }
 
 //    @Test
 //    public void chooseMoveBlockCombo1() {
@@ -354,25 +311,6 @@ public class AlgorithmTest {
 //
 //        Move move = algorithm.chooseMove(FRIENDLY, board, 5, TIME_LIMIT);
 //        assertTrue("move: " + move, possibleMoves.contains(move));
-//    }
-//
-//    @Test
-//    public void chooseMoveBlockCombo2() {
-//        //   |   |   |   |
-//        //   |   |   | O |
-//        // O | O | O |(F)|
-//        //   |   |   | O |
-//        //   |   |   | O |
-//        Board board = new Board(4, 5)
-//                .withMove(new Move(OPPONENT, 0, 2))
-//                .withMove(new Move(OPPONENT, 1, 2))
-//                .withMove(new Move(OPPONENT, 2, 2))
-//                .withMove(new Move(OPPONENT, 3, 1))
-//                .withMove(new Move(OPPONENT, 3, 3))
-//                .withMove(new Move(OPPONENT, 3, 4));
-//
-//        Move move = new Move(FRIENDLY, 3, 2);
-//        assertEquals(move, algorithm.chooseMove(FRIENDLY, board, 5, TIME_LIMIT));
 //    }
 //
 //    @Test

@@ -7,8 +7,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import static gomoku.Direction.East;
 import static gomoku.Direction.North;
-import static gomoku.Direction.South;
 import static gomoku.Stone.FRIENDLY;
 import static gomoku.Stone.OPPONENT;
 import static java.lang.Character.toLowerCase;
@@ -76,41 +76,70 @@ class Board {
     }
 
     Boolean isValidMove(Move move) {
-        return move != null
-                && move.getColumn() < width
-                && move.getColumn() >= 0
-                && move.getRow() < height
-                && move.getRow() >= 0;
+        return move != null && isWithinBounds(move.getColumn(), move.getRow());
     }
 
     Boolean isDraw() {
         return getOpenCells().isEmpty();
     }
 
-    Boolean willBeWin(Move move, Integer winLength) {
+    Boolean isWin(Move move, Integer winLength) {
+        return Direction.semiCircle().anyMatch(dir -> isWinInDirection(move, winLength, dir));
+    }
+
+    private Boolean isWinInDirection(Move move, Integer winLength, Direction direction) {
+        return countConsecutiveStones(move, winLength, direction)
+                + countConsecutiveStones(move, winLength, direction.opposite())
+                >= winLength - 1;
+    }
+
+    Boolean isBlock(Move move, Integer winLength) {
+        return isWin(move.forOpponent(), winLength);
+    }
+
+    Boolean is2AwayWin(Move move, Integer winLength) {
+        return Direction.semiCircle().anyMatch(dir -> is2AwayWinInDirection(move, winLength, dir));
+    }
+
+    Boolean is2AwayBlock(Move move, Integer winLength) {
+        return is2AwayWin(move.forOpponent(), winLength);
+    }
+
+    Boolean isComboWin(Move move, Integer winLength) {
+        Board board = withMove(move);
         Integer minLength = winLength - 1;
-        return Direction.semiCircle().anyMatch(dir ->
-                getNumInARow(move, winLength, dir) + getNumInARow(move, winLength, dir.flip()) >= minLength);
+        return board.countConsecutiveStones(move.translate(North), winLength, North.opposite()) >= minLength
+                || board.countConsecutiveStones(move.translate(East), winLength, East.opposite()) >= minLength;
     }
 
-    Boolean willBeBlock(Move move, Integer winLength) {
-        return willBeWin(move.forOpponent(), winLength);
+    Boolean isComboBlock(Move move, Integer winLength) {
+        return isComboWin(move.forOpponent(), winLength);
     }
 
-    Boolean willBeBlockIn2Moves(Move move, Integer winLength) {
-        return Direction.all().anyMatch(dir -> {
-            int col = move.getColumn() + winLength * dir.dCol;
-            int row = move.getRow() + winLength * dir.dRow;
-            int oppLength = winLength - 2;
-            return willBeBlockIn2MovesInDirection(move.forOpponent(), col, row, oppLength, dir);
-        });
+    Integer getWidth() {
+        return width;
     }
 
-    private Boolean willBeBlockIn2MovesInDirection(Move move, Integer col, Integer row, Integer length, Direction direction) {
-        return     isWithinBounds(col, row)
-                && getNumInARow(move, length, direction).equals(length)
-                && getStoneInCell(col, row) == null
-                && getStoneInCell(col - direction.dCol, row - direction.dRow) == null;
+    Integer getHeight() {
+        return height;
+    }
+
+    Boolean hasStoneInCell(Integer col, Integer row) {
+        return getStoneInCell(col, row) != null;
+    }
+
+    private Boolean is2AwayWinInDirection(Move move, Integer winLength, Direction direction) {
+        int col = move.getColumn() + winLength * direction.dCol;
+        int row = move.getRow() + winLength * direction.dRow;
+        int oppLength = winLength - 2;
+        if (isWithinBounds(col, row)) {
+            Integer countInDir = countConsecutiveStones(move, oppLength, direction);
+            Integer countInOppDir = countConsecutiveStones(move, oppLength, direction.opposite());
+            if (countInDir >= oppLength) {
+                return !hasStoneInCell(col, row) && !hasStoneInCell(col - direction.dCol, row - direction.dRow);
+            }
+        }
+        return false;
     }
 
     private Boolean isWithinBounds(Integer col, Integer row) {
@@ -118,19 +147,17 @@ class Board {
                 && 0 <= row && row < height;
     }
 
-    private Integer getNumInARow(Move move, Integer length, Direction direction) {
+    private Integer countConsecutiveStones(Move move, Integer length, Direction direction) {
         if (length == 1)
             return 0;
-        int numInARow = 1;
-        for (; numInARow < length; numInARow++) {
-            int newCol = move.getColumn() + direction.dCol * numInARow;
-            int newRow = move.getRow() + direction.dRow * numInARow;
+        for (int count = 1; count < length; count++) {
+            int newCol = move.getColumn() + direction.dCol * count;
+            int newRow = move.getRow() + direction.dRow * count;
             if (getStoneInCell(newCol, newRow) != move.getStone()) {
-                numInARow--;
-                break;
+                return count - 1;
             }
         }
-        return numInARow;
+        return length;
     }
 
     @Override
@@ -168,16 +195,6 @@ class Board {
         if (stone == OPPONENT)
             return "O";
         return " ";
-    }
-
-    Boolean willBeComboBlock(Move move, Integer winLength) {
-        Board board = withMove(move.forOpponent());
-        Integer minLength = winLength - 1;
-        Move northMove = new Move(move.getStone().getOpponent(), move.getColumn() + North.dCol, move.getRow() + North.dRow);
-        Integer numInARow = getNumInARow(northMove, winLength, South);
-        if (numInARow >= minLength)
-            return true;
-        return false;
     }
 }
 

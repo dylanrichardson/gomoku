@@ -65,4 +65,8 @@ class Move {
     Move forOpponent() {
         return new Move(stone.getOpponent(), column, row);
     }
+
+    Move translate(Direction direction) {
+        return new Move(stone, column + direction.dCol, row + direction.dRow);
+    }
 }

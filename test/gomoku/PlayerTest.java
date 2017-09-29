@@ -28,7 +28,6 @@ public class PlayerTest {
 
 //    @Test
 //    public void play3x3() {
-//        Debug.print = true;
 //        play(3, 3, 3);
 //
 //        assertNull(exception);
