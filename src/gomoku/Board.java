@@ -88,7 +88,7 @@ class Board {
         return Direction.semiCircle().anyMatch(dir -> isWinOnAxis(move, winLength, dir));
     }
 
-    Boolean isWinOnAxis(Move move, Integer winLength, Direction direction) {
+    private Boolean isWinOnAxis(Move move, Integer winLength, Direction direction) {
         return countConsecutiveStones(move, winLength, direction)
                 + countConsecutiveStones(move, winLength, direction.opposite())
                 >= winLength - 1;

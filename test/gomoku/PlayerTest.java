@@ -26,18 +26,6 @@ public class PlayerTest {
     private Result resultB;
     private Throwable exception;
 
-//    @Test
-//    public void play3x3() {
-//        play(3, 3, 3);
-//
-//        assertNull(exception);
-//        assertEquals(DRAW, resultA.getOutcome());
-//        assertEquals(DRAW, resultB.getOutcome());
-//        assertEquals(9, resultA.getMoves().size());
-//        assertEquals(9, resultB.getMoves().size());
-//    }
-//
-//
     @Test
     public void play15x15() {
         play(15, 15, 5);

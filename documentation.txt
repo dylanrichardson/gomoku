@@ -31,7 +31,7 @@ strategic configuration is found, it then recurses into the minimax algorithm, e
 move by repeating.
 
 
-Hueristics and/or Strategies used:
+Heuristics and/or Strategies used:
 We looked for 3 offensive and defensive strategies. There's a strategy called "isWin" that determines if you have 4 
 stones together in which you need only to place the 5th in order to win, and the opposite of that strategy is "isBlock" 
 which blocks the opponent if they have 4 of their stones together. 

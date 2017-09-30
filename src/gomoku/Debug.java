@@ -3,7 +3,7 @@ package gomoku;
 class Debug {
 
     static Boolean print = false;
-    static Boolean debug = false;
+    private static Boolean debug = false;
 
     static void print(Object x) {
         if (print)

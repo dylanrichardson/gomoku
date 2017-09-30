@@ -2,11 +2,8 @@ package gomoku;
 
 import org.junit.Test;
 
-import java.util.Collection;
-
 import static gomoku.Stone.FRIENDLY;
 import static gomoku.Stone.OPPONENT;
-import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -15,131 +12,6 @@ public class AlgorithmTest {
     private static final Double TIME_LIMIT = 1.0 * 1000000000; // 1 sec
 
     private final Algorithm algorithm = new Algorithm();
-
-    // evaluateMove
-
-//    @Test
-//    public void evaluateMoveWinEast() {
-//        //  F | F |(F)
-//        //    |   |
-//        //    |   |
-//        Board board = new Board(3, 3)
-//                .withMove(new Move(FRIENDLY, 0, 0))
-//                .withMove(new Move(FRIENDLY, 1, 0));
-//        Move move = new Move(FRIENDLY, 2, 0);
-//
-//        assertEquals(WIN_VALUE, algorithm.evaluateMove(move, board, 3, TIME_LIMIT));
-//    }
-//
-//    @Test
-//    public void evaluateMoveLoss1() {
-//        //  O | O |
-//        //  F |   |(F)
-//        //    |   |
-//        Board board = new Board(3, 3)
-//                .withMove(new Move(OPPONENT, 0, 0))
-//                .withMove(new Move(FRIENDLY, 0, 1))
-//                .withMove(new Move(OPPONENT, 1, 0));
-//        Move move = new Move(FRIENDLY, 2, 1);
-//
-//        assertEquals(WIN_VALUE * -1, algorithm.evaluateMove(move, board, 3, TIME_LIMIT), 0);
-//    }
-//
-//    @Test
-//    public void evaluateMoveLoss2() {
-//        // F |(F)|
-//        // F | O |
-//        // O |   |
-//        Board board = new Board(3, 3)
-//                .withMove(new Move(FRIENDLY, 0, 0))
-//                .withMove(new Move(OPPONENT, 1, 1))
-//                .withMove(new Move(FRIENDLY, 0, 1))
-//                .withMove(new Move(OPPONENT, 0, 2));
-//
-//        Move move = new Move(FRIENDLY, 1, 0);
-//
-//        assertEquals(WIN_VALUE * -1, algorithm.evaluateMove(move, board, 3, TIME_LIMIT), 0);
-//    }
-//
-//    @Test
-//    public void evaluateMoveLoss3() {
-//        //  O | O |
-//        //  F | F | O
-//        // (F)| O | F
-//        Board board = new Board(3, 3)
-//                .withMove(new Move(OPPONENT, 0, 0))
-//                .withMove(new Move(FRIENDLY, 1, 1))
-//                .withMove(new Move(OPPONENT, 2, 1))
-//                .withMove(new Move(FRIENDLY, 0, 1))
-//                .withMove(new Move(OPPONENT, 1, 2))
-//                .withMove(new Move(FRIENDLY, 2, 2))
-//                .withMove(new Move(OPPONENT, 1, 0));
-//        Move move = new Move(FRIENDLY, 0, 2);
-//
-//
-//        assertEquals(WIN_VALUE * -1, algorithm.evaluateMove(move, board, 3, TIME_LIMIT), 0);
-//    }
-//
-//    @Test
-//    public void evaluateMoveLoss4() {
-//        //  F | F |
-//        //  O | O | F
-//        // (O)| F | O
-//        Board board = new Board(3, 3)
-//                .withMove(new Move(FRIENDLY, 0, 0))
-//                .withMove(new Move(OPPONENT, 1, 1))
-//                .withMove(new Move(FRIENDLY, 2, 1))
-//                .withMove(new Move(OPPONENT, 0, 1))
-//                .withMove(new Move(FRIENDLY, 1, 2))
-//                .withMove(new Move(OPPONENT, 2, 2))
-//                .withMove(new Move(FRIENDLY, 1, 0));
-//        Move move = new Move(OPPONENT, 0, 2);
-//
-//
-//        assertEquals(WIN_VALUE, algorithm.evaluateMove(move, board, 3, TIME_LIMIT));
-//    }
-//
-//    @Test
-//    public void evaluateMoveWin4x4() {
-//        //  F | F | F |(F)
-//        //    |   |   |
-//        //    |   |   |
-//        //    |   |   |
-//        Board board = new Board(4, 4)
-//                .withMove(new Move(FRIENDLY, 0, 0))
-//                .withMove(new Move(FRIENDLY, 1, 0))
-//                .withMove(new Move(FRIENDLY, 2, 0));
-//        Move move = new Move(FRIENDLY, 3, 0);
-//
-//        assertEquals(WIN_VALUE, algorithm.evaluateMove(move, board, 4, TIME_LIMIT));
-//    }
-//
-//    @Test
-//    public void evaluateMoveLoss4x4() {
-//        //  F | F | F |
-//        //    |   |   |(O)
-//        //    |   |   |
-//        //    |   |   |
-//        Board board = new Board(4, 4)
-//                .withMove(new Move(FRIENDLY, 0, 0))
-//                .withMove(new Move(FRIENDLY, 1, 0))
-//                .withMove(new Move(FRIENDLY, 2, 0));
-//        Move move = new Move(OPPONENT, 3, 1);
-//
-//        assertEquals(WIN_VALUE, algorithm.evaluateMove(move, board, 4, TIME_LIMIT * 5));
-//    }
-//
-//    @Test
-//    public void evaluateMoveDraw4x4() {
-//        // (F)|   |   |
-//        //    |   |   |
-//        //    |   |   |
-//        //    |   |   |
-//        Board board = new Board(4, 4);
-//        Move move = new Move(FRIENDLY, 0, 0);
-//
-//        assertEquals(DRAW_VALUE, algorithm.evaluateMove(move, board, 4, TIME_LIMIT));
-//    }
 
     // time limit
 
@@ -157,7 +29,6 @@ public class AlgorithmTest {
 
     @Test
     public void evaluateMoveInTimeLimit() {
-//        Debug.print = true;
         Board board = new Board(15, 15);
         Move move = new Move(FRIENDLY, 0, 0);
 
@@ -166,19 +37,6 @@ public class AlgorithmTest {
         Long duration = System.nanoTime() - startTime;
 
         assertTrue("expected: " + TIME_LIMIT + " actual: " + duration,duration < TIME_LIMIT);
-    }
-
-    // getHeuristic
-
-    @Test
-    public void getHeuristic() {
-        // TODO
-        Board board = new Board(15, 15)
-                .withMove(new Move(OPPONENT, 7, 7));
-        Double h1 = algorithm.getHeuristic(board, new Move(FRIENDLY, 8, 8));
-        Double h2 = algorithm.getHeuristic(board, new Move(FRIENDLY, 9, 9));
-
-        algorithm.getHeuristic(board, new Move(FRIENDLY, 8, 8));
     }
 
     @Test
@@ -194,15 +52,6 @@ public class AlgorithmTest {
         Move move = new Move(OPPONENT, 0, 2);
         assertEquals(move, algorithm.chooseMove(OPPONENT, board, 3, TIME_LIMIT));
     }
-
-    // getPossibleMoves
-
-//    @Test
-//    public void getPossibleMoves() {
-//        // TODO
-//        Board board = new Board(15, 15);
-//        algorithm.getPossibleMoves(FRIENDLY, board);
-//    }
 
     // offensive strategy
 
@@ -267,20 +116,6 @@ public class AlgorithmTest {
 
         assertEquals(move, algorithm.chooseMove(FRIENDLY, board, 3, TIME_LIMIT));
     }
-
-//    @Test
-//    public void chooseMoveBlock2ndWinEast() {
-//        //   |   |   |   |
-//        //(F)| O | O |   |
-//        //   |   |   |   |
-//        Board board = new Board(5, 3)
-//                .withMove(new Move(OPPONENT, 1, 1))
-//                .withMove(new Move(OPPONENT, 2, 1));
-//
-//        Move move = new Move(FRIENDLY, 3, 1);
-//
-//        assertEquals(move, algorithm.chooseMove(FRIENDLY, board, 4, TIME_LIMIT));
-//    }
 
     @Test
     public void chooseMoveBlockCombo() {

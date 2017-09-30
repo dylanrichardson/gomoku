@@ -6,7 +6,7 @@ import static gomoku.Board.convertRow;
 class Move {
 
     private final Stone stone;
-    private Cell cell;
+    private final Cell cell;
 
     // when parsed
     Move(Stone stone, Character column, Integer row) {

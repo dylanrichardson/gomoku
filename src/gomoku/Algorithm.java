@@ -30,12 +30,10 @@ class Algorithm {
         Move bestMove = null;
         Double bestScore = -1 * WIN_VALUE;
         List<Move> moves = getPossibleMoves(stone, board);
-        //reverse(moves);
 
         for (int i = 0; i < moves.size(); i++) {
             Double newTimeLimit = timeLeft.get() / (moves.size() - i);
             Move move = moves.get(i);
-            Debug.debug(move);
             Double score = evaluateMove(move, board, winLength, -1 * WIN_VALUE, WIN_VALUE,newTimeLimit);
 
             if (score >= bestScore) {
@@ -75,7 +73,7 @@ class Algorithm {
         }
         // minimax
         Board newBoard = board.withMove(move);
-        return HEURISTIC_FACTOR *  getExtremeValue(move.getStone().getOpponent(), newBoard, winLength, alpha, beta, getTimeLeft(startTime, timeLimit));
+        return HEURISTIC_FACTOR * getExtremeValue(move.getStone().getOpponent(), newBoard, winLength, alpha, beta, getTimeLeft(startTime, timeLimit));
     }
 
     // minimax
@@ -128,7 +126,7 @@ class Algorithm {
         return extremeScore * mod;
     }
 
-    Double getHeuristic(Board board, Move move) {
+    private Double getHeuristic(Board board, Move move) {
         if (move == null)
             return DRAW_VALUE;
         Debug.print(board);
@@ -142,7 +140,7 @@ class Algorithm {
                 .collect(Collectors.toList());
     }
 
-    List<Move> getPossibleMoves(Stone stone, Board board) {
+    private List<Move> getPossibleMoves(Stone stone, Board board) {
         return board
                 .getOpenCells()
                 .stream()

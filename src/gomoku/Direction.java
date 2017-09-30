@@ -18,7 +18,7 @@ enum Direction {
     public Integer dRow;
 
 
-    private static Map<Cell, Direction> map = new HashMap<>();
+    private static final Map<Cell, Direction> map = new HashMap<>();
 
     static {
         for (Direction dir : Direction.values()) {

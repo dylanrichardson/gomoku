@@ -6,8 +6,8 @@ import static gomoku.Board.printRow;
 class Cell {
 
 
-    private Integer column;
-    private Integer row;
+    private final Integer column;
+    private final Integer row;
 
     Cell(Integer column, Integer row) {
         this.column = column;

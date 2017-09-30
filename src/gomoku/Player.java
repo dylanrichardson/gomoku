@@ -73,14 +73,10 @@ class Player {
 
     private void readMove() {
         Move move = gameCommunication.readMove();
-        if (board.isValidMove(move) && !isRepeat(move)) {
+        if (board.isValidMove(move)) {
             moves.add(move);
             board = board.withMove(move);
         }
-    }
-
-    private Boolean isRepeat(Move move) {
-        return false;//moves.size() > 0 && moves.get(moves.size() - 1).getCell().equals(move.getCell());
     }
 
     private void makeMove() {
