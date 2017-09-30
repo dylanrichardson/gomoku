@@ -98,6 +98,7 @@ public class PlayerTest {
         tryDelete(playerB + ".go");
         tryDelete(MOVE_FILE);
         tryDelete(END_GAME);
+        tryDelete("history_file");
     }
 
     private void tryDelete(String path) {
