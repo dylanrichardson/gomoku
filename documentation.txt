@@ -1,0 +1,66 @@
+Documentation:
+
+
+
+Program name:
+
+BID
+
+
+
+Group members:
+
+Dylan Richardson, Anabella Isaro, Brian Copeland
+
+
+
+Compiling and running instructions:
+To compile, open it in an IDE (such as Eclipse or IntelliJ) and compile it.
+To run, the command is java -jar gomoku.jar
+
+
+Utility function:
+Our utilities are in "isWin" and "isDraw" where we check if there's a win, or if there's a draw. We don't really have 
+a loss value, per say, because you can't make a move and lose the game. So it can be a win for you, or it can be a win 
+for the opponent.
+
+
+Evaluation function:
+First, it looks for strategies, known configurations of stones for offensive and defensive strategies. If no 
+strategic configuration is found, it then recurses into the minimax algorithm, evaluating the opponent's next best 
+move by repeating.
+
+
+Hueristics and/or Strategies used:
+We looked for 3 offensive and defensive strategies. There's a strategy called "isWin" that determines if you have 4 
+stones together in which you need only to place the 5th in order to win, and the opposite of that strategy is "isBlock" 
+which blocks the opponent if they have 4 of their stones together. 
+The strategy called "is1AwayWin" determines if you have a configuration in which you could place a stone that would 
+then lead you into the "isWin" condition in a nearby group of stones. The opposite of that strategy is "is1AwayBlock" 
+which blocks the opponent from doing the same.
+The last strategy is "isComboWin" which detects the intersection of 2 "is1Away" configurations. Placing a move 
+in an "isComboWin" configuration produces 2 "isWin" configurations. The opposite strategy "isComboBlock" prevents the 
+opponent from doing the same.
+The strategies are valued in the order:
+isWin, isBlock, isComboWin, isComboBlock, is1AwayWin, is1AwayBlock.
+
+These strategies prevent expansion of nodes after it. As well, we give ourselves a maximum time limit for minimax, 
+and the remaining time for minimax is divided between each node that is expanded in the tree, so each node is 
+afforded its own time limit.
+
+
+Results:
+The development was driven by unit tests, which tested configurations of our strategies, completing move 
+evaluations within time limits, and tested game communication. We had automated tests for the AI to play against 
+itself. We also ran it against humans a couple of times. When it played against itself, after one side won, we 
+would analyze the steps and moves that led up to the victory/loss and then write offensive/defensive 
+strategies to address it. Our final release of it playing against itself did fairly well, almost filling up the 
+entire board. Against humans, it didn't do as well offensively, but its defense was excellent. 
+The program's major strength is defense, with its weakness being offense. It didn't set up offensive strategies, 
+just preventing the opponent from doing the same. 
+
+
+
+Discussion of Evaluation Function and Heuristics:
+Our evaluation is excellent because it can determine optimal moves before searching through a tree. Our heuristic is 
+excellent because it doesn't need to look at the whole board and only takes in the last move, so it acts very fast.
