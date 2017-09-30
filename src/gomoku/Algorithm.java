@@ -1,6 +1,8 @@
 package gomoku;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -60,7 +62,7 @@ class Algorithm {
             return BLOCK_WIN_VALUE;
         }
         if (board.isComboWin(move, winLength)) {
-            return BLOCK_COMBO_WIN_VALUE;
+            return COMBO_WIN_VALUE;
         }
         if (board.isComboBlock(move, winLength)) {
             return BLOCK_COMBO_WIN_VALUE;
@@ -93,7 +95,7 @@ class Algorithm {
             Double newTimeLimit = getTimeLeft(startTime, timeLimit) / (moves.size() - i);
             // check if out of time
             if (newTimeLimit < MIN_TIME_LIMIT) {
-                return getHeuristic(board, extremeMove);
+                return mod * getHeuristic(board, extremeMove);
             }
 
 
@@ -127,12 +129,20 @@ class Algorithm {
     }
 
     Double getHeuristic(Board board, Move move) {
-        // TODO
-        return DRAW_VALUE;
+        if (move == null)
+            return DRAW_VALUE;
+        Debug.print(board);
+        return getNearbyStones(board, move.getCell()).size() / 8.0;
+    }
+
+    private Collection<Stone> getNearbyStones(Board board, Cell cell) {
+        return Direction.all()
+                .map(dir -> board.getStoneInCell(cell.translate(dir)))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     List<Move> getPossibleMoves(Stone stone, Board board) {
-        // TODO order the moves
         return board
                 .getOpenCells()
                 .stream()

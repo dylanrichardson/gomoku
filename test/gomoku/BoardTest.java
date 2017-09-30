@@ -10,8 +10,10 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static gomoku.Direction.*;
 import static gomoku.Main.BOARD_SIDE_LENGTH;
 import static gomoku.Main.WIN_LENGTH;
+import static gomoku.Player.TIME_LIMIT;
 import static gomoku.Stone.FRIENDLY;
 import static gomoku.Stone.OPPONENT;
 import static org.junit.Assert.*;
@@ -122,20 +124,14 @@ public class BoardTest {
         testStrategy(BoardTest::is2AwayBlock, 3);
     }
 
-    private static Boolean isWin(Board board, Move move) {
-        return board.isWin(move, WIN_LENGTH);
+    @Test
+    public void isComboWin() {
+        testComboStrategy(BoardTest::isComboWin);
     }
 
-    private static Boolean isBlock(Board board, Move move) {
-        return board.isBlock(move.forOpponent(), WIN_LENGTH);
-    }
-
-    private static Boolean is2AwayWin(Board board, Move move) {
-        return board.is2AwayWin(move, WIN_LENGTH);
-    }
-
-    private static Boolean is2AwayBlock(Board board, Move move) {
-        return board.is2AwayBlock(move.forOpponent(), WIN_LENGTH);
+    @Test
+    public void isComboBlock() {
+        testComboStrategy(BoardTest::isComboBlock);
     }
 
     private void testStrategy(BiFunction<Board, Move, Boolean> isStrategy, Integer length) {
@@ -162,42 +158,103 @@ public class BoardTest {
                 .collect(Collectors.toList());
     }
 
-    @Test
-    public void isComboBlockWestAndSouth() {
-        //   |   |   |   |
-        // O | O | O |(F)|
-        //   |   |   | O |
-        //   |   |   | O |
-        //   |   |   | O |
-        Board board = new Board(5, 5)
-                .withMove(new Move(OPPONENT, 0, 1))
-                .withMove(new Move(OPPONENT, 1, 1))
-                .withMove(new Move(OPPONENT, 2, 1))
-                .withMove(new Move(OPPONENT, 3, 2))
-                .withMove(new Move(OPPONENT, 3, 3))
-                .withMove(new Move(OPPONENT, 3, 4));
+    private static Boolean isWin(Board board, Move move) {
+        return board.isWin(move, WIN_LENGTH);
+    }
 
-        Move move = new Move(FRIENDLY, 3, 1);
-        assertTrue(board.isComboBlock(move, 5));
+    private static Boolean isBlock(Board board, Move move) {
+        return board.isBlock(move.forOpponent(), WIN_LENGTH);
+    }
+
+    private static Boolean is2AwayWin(Board board, Move move) {
+        return board.is2AwayWin(move, WIN_LENGTH);
+    }
+
+    private static Boolean is2AwayBlock(Board board, Move move) {
+        return board.is2AwayBlock(move.forOpponent(), WIN_LENGTH);
+    }
+
+    private static Boolean isComboWin(Board board, Move move) {
+        return board.isComboWin(move, WIN_LENGTH);
+    }
+
+    private static Boolean isComboBlock(Board board, Move move) {
+        return board.isComboBlock(move.forOpponent(), WIN_LENGTH);
+    }
+
+    private void testComboStrategy(BiFunction<Board, Move, Boolean> isStrategy) {
+        testComboNoSpace(isStrategy);
+        testCombo1Space(isStrategy);
+        testCombo2Space(isStrategy);
+    }
+
+    private void testComboNoSpace(BiFunction<Board, Move, Boolean> isStrategy) {
+        Direction.all().forEach(dir1 -> {
+            Direction.all().forEach(dir2 -> {
+                if (!dir1.equals(dir2)) {
+                    Move move = new Move(FRIENDLY, BOARD_SIDE_LENGTH / 2, BOARD_SIDE_LENGTH / 2);
+                    Board board = new Board(BOARD_SIDE_LENGTH, BOARD_SIDE_LENGTH)
+                            .withMoves(getMovesInDirection(move, dir1, 3))
+                            .withMoves(getMovesInDirection(move, dir2, 3));
+
+                    String errMsg = "\n" + board + "dir1: " + dir1 + "dir2: " + dir2 + " countDir: " + 3;
+                    assertTrue(errMsg, isStrategy.apply(board, move));
+                }
+            });
+        });
+    }
+
+    private void testCombo1Space(BiFunction<Board, Move, Boolean> isStrategy) {
+        Direction.all().forEach(dir1 -> {
+            Direction.all().forEach(dir2 -> {
+                if (!dir1.equals(dir2) && !dir1.equals(dir2.opposite())) {
+                    Move move = new Move(FRIENDLY, BOARD_SIDE_LENGTH / 2, BOARD_SIDE_LENGTH / 2);
+                    Board board = new Board(BOARD_SIDE_LENGTH, BOARD_SIDE_LENGTH)
+                            .withMoves(getMovesInDirection(move, dir1, 2))
+                            .withMoves(getMovesInDirection(move, dir2, 2))
+                            .withMoves(getMovesInDirection(move, dir1.opposite(), 1))
+                            .withMoves(getMovesInDirection(move, dir2.opposite(), 1));
+
+                    String errMsg = "\n" + board + "dir1: " + dir1 + "dir2: " + dir2 + " countDir: " + 3;
+                    assertTrue(errMsg, isStrategy.apply(board, move));
+                }
+            });
+        });
+    }
+
+    private void testCombo2Space(BiFunction<Board, Move, Boolean> isStrategy) {
+        Direction.all().forEach(dir1 -> {
+            Direction.all().forEach(dir2 -> {
+                if (!dir1.equals(dir2) && !dir1.equals(dir2.opposite())) {
+                    Move move = new Move(FRIENDLY, BOARD_SIDE_LENGTH / 2, BOARD_SIDE_LENGTH / 2);
+                    Board board = new Board(BOARD_SIDE_LENGTH, BOARD_SIDE_LENGTH)
+                            .withMoves(getMovesInDirection(move.translate(dir1), dir1, 2))
+                            .withMoves(getMovesInDirection(move.translate(dir2), dir2, 2))
+                            .withMoves(getMovesInDirection(move, dir1.opposite(), 1))
+                            .withMoves(getMovesInDirection(move, dir2.opposite(), 1));
+
+                    String errMsg = "\n" + board + "dir1: " + dir1 + "dir2: " + dir2 + " countDir: " + 3;
+                    assertTrue(errMsg, isStrategy.apply(board, move));
+                }
+            });
+        });
     }
 
     @Test
-    public void isComboBlockWestAndSouth2() {
-        // O | O | O |(F)|
-        //   |   |   |   |
-        //   |   |   | O |
-        //   |   |   | O |
-        //   |   |   | O |
-        Board board = new Board(5, 5)
+    public void border() {
+        // O |   |
+        // O |   |
+        // O |   |
+        //(F)|   |
+        //   |   |
+        Board board = new Board(2, 7)
                 .withMove(new Move(OPPONENT, 0, 0))
-                .withMove(new Move(OPPONENT, 1, 0))
-                .withMove(new Move(OPPONENT, 2, 0))
-                .withMove(new Move(OPPONENT, 3, 2))
-                .withMove(new Move(OPPONENT, 3, 3))
-                .withMove(new Move(OPPONENT, 3, 4));
+                .withMove(new Move(OPPONENT, 0, 1))
+                .withMove(new Move(OPPONENT, 0, 2));
 
-        Move move = new Move(FRIENDLY, 3, 0);
-        assertTrue(board.isComboBlock(move, 5));
+        Move move = new Move(FRIENDLY, 0, 3);
+        assertTrue(board.is2AwayWinOnAxis(move.forOpponent(), 5, North));
+        assertTrue(board.is2AwayBlock(move, 5));
     }
 
 }

@@ -72,8 +72,13 @@ class GomokuBoard(object):
                 if self._field[x][y].team is None:
                     sys.stdout.write('-')
                 else:
+                    last_move = self.move_history[-1].x == x and self.move_history[-1].y == y
+                    if last_move:
+                        sys.stdout.write('\x1b[91m')
                     team_name_hash = hashlib.md5(self._field[x][y].team).hexdigest()
                     sys.stdout.write(team_name_hash[0])
+                    if last_move:
+                        sys.stdout.write('\x1b[00m')
                 sys.stdout.write(' ')
             sys.stdout.write('\n')
 

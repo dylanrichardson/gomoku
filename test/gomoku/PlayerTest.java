@@ -38,16 +38,16 @@ public class PlayerTest {
 //    }
 //
 //
-//    @Test
-//    public void play15x15() {
-//        play(15, 15, 5);
-//
-//        assertNull(exception);
-//        assertEquals(DRAW, resultA.getOutcome());
-//        assertEquals(DRAW, resultB.getOutcome());
-//        assertEquals(15*15, resultA.getMoves().size());
-//        assertEquals(15*15, resultB.getMoves().size());
-//    }
+    @Test
+    public void play15x15() {
+        play(15, 15, 5);
+
+        assertNull(exception);
+        assertEquals(DRAW, resultA.getOutcome());
+        assertEquals(DRAW, resultB.getOutcome());
+        assertEquals(15*15, resultA.getMoves().size());
+        assertEquals(15*15, resultB.getMoves().size());
+    }
 
     private void play(Integer width, Integer height, Integer winLength) {
         cleanUpGame();

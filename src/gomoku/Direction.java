@@ -1,7 +1,5 @@
 package gomoku;
 
-import com.sun.tools.javac.util.Pair;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -20,11 +18,11 @@ enum Direction {
     public Integer dRow;
 
 
-    private static Map<Pair<Integer, Integer>, Direction> map = new HashMap<Pair<Integer, Integer>, Direction>();
+    private static Map<Cell, Direction> map = new HashMap<>();
 
     static {
         for (Direction dir : Direction.values()) {
-            map.put(new Pair<>(dir.dCol, dir.dRow), dir);
+            map.put(new Cell(dir.dCol, dir.dRow), dir);
         }
     }
 
@@ -38,7 +36,7 @@ enum Direction {
     }
 
     Direction opposite() {
-        return map.get(new Pair<>(dCol * -1, dRow * -1));
+        return map.get(new Cell(dCol * -1, dRow * -1));
     }
 
     static Stream<Direction> semiCircle() {
