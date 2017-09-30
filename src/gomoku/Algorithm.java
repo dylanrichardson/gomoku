@@ -15,8 +15,8 @@ class Algorithm {
     private static final Double BLOCK_WIN_VALUE = 0.9;
     private static final Double COMBO_WIN_VALUE = 0.8;
     private static final Double BLOCK_COMBO_WIN_VALUE = 0.7;
-    private static final Double TWO_AWAY_WIN_VALUE = 0.6;
-    private static final Double BLOCK_TWO_AWAY_WIN_VALUE = 0.5;
+    private static final Double ONE_AWAY_WIN_VALUE = 0.6;
+    private static final Double BLOCK_ONE_AWAY_WIN_VALUE = 0.5;
     private static final Double HEURISTIC_FACTOR = 0.2;
     private static final Double DRAW_VALUE = 0.0;
 
@@ -67,11 +67,11 @@ class Algorithm {
         if (board.isComboBlock(move, winLength)) {
             return BLOCK_COMBO_WIN_VALUE;
         }
-        if (board.is2AwayWin(move, winLength)) {
-            return TWO_AWAY_WIN_VALUE;
+        if (board.is1AwayWin(move, winLength)) {
+            return ONE_AWAY_WIN_VALUE;
         }
-        if (board.is2AwayBlock(move, winLength)) {
-            return BLOCK_TWO_AWAY_WIN_VALUE;
+        if (board.is1AwayBlock(move, winLength)) {
+            return BLOCK_ONE_AWAY_WIN_VALUE;
         }
         // minimax
         Board newBoard = board.withMove(move);

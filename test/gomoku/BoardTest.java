@@ -13,7 +13,6 @@ import java.util.stream.IntStream;
 import static gomoku.Direction.*;
 import static gomoku.Main.BOARD_SIDE_LENGTH;
 import static gomoku.Main.WIN_LENGTH;
-import static gomoku.Player.TIME_LIMIT;
 import static gomoku.Stone.FRIENDLY;
 import static gomoku.Stone.OPPONENT;
 import static org.junit.Assert.*;
@@ -115,13 +114,13 @@ public class BoardTest {
     }
 
     @Test
-    public void is2AwayWin() {
-        testStrategy(BoardTest::is2AwayWin, 3);
+    public void is1AwayWin() {
+        testStrategy(BoardTest::is1AwayWin, 3);
     }
 
     @Test
-    public void is2AwayBlock() {
-        testStrategy(BoardTest::is2AwayBlock, 3);
+    public void is1AwayBlock() {
+        testStrategy(BoardTest::is1AwayBlock, 3);
     }
 
     @Test
@@ -166,12 +165,12 @@ public class BoardTest {
         return board.isBlock(move.forOpponent(), WIN_LENGTH);
     }
 
-    private static Boolean is2AwayWin(Board board, Move move) {
-        return board.is2AwayWin(move, WIN_LENGTH);
+    private static Boolean is1AwayWin(Board board, Move move) {
+        return board.is1AwayWin(move, WIN_LENGTH);
     }
 
-    private static Boolean is2AwayBlock(Board board, Move move) {
-        return board.is2AwayBlock(move.forOpponent(), WIN_LENGTH);
+    private static Boolean is1AwayBlock(Board board, Move move) {
+        return board.is1AwayBlock(move.forOpponent(), WIN_LENGTH);
     }
 
     private static Boolean isComboWin(Board board, Move move) {
@@ -253,8 +252,8 @@ public class BoardTest {
                 .withMove(new Move(OPPONENT, 0, 2));
 
         Move move = new Move(FRIENDLY, 0, 3);
-        assertTrue(board.is2AwayWinOnAxis(move.forOpponent(), 5, North));
-        assertTrue(board.is2AwayBlock(move, 5));
+        assertTrue(board.is1AwayWinOnAxis(move.forOpponent(), 5, North));
+        assertTrue(board.is1AwayBlock(move, 5));
     }
 
 }

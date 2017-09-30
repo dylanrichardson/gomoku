@@ -98,12 +98,12 @@ class Board {
         return isWin(move.forOpponent(), winLength);
     }
 
-    Boolean is2AwayWin(Move move, Integer winLength) {
-        return Direction.semiCircle().anyMatch(dir -> is2AwayWinOnAxis(move, winLength, dir));
+    Boolean is1AwayWin(Move move, Integer winLength) {
+        return Direction.semiCircle().anyMatch(dir -> is1AwayWinOnAxis(move, winLength, dir));
     }
 
-    Boolean is2AwayBlock(Move move, Integer winLength) {
-        return is2AwayWin(move.forOpponent(), winLength);
+    Boolean is1AwayBlock(Move move, Integer winLength) {
+        return is1AwayWin(move.forOpponent(), winLength);
     }
 
     Boolean isComboWin(Move move, Integer winLength) {
@@ -130,7 +130,7 @@ class Board {
         return getStoneInCell(cell) != null;
     }
 
-    Boolean is2AwayWinOnAxis(Move move, Integer winLength,
+    Boolean is1AwayWinOnAxis(Move move, Integer winLength,
                              Direction direction) {
         Board board = withMove(move);
         return IntStream.range(1, winLength)
